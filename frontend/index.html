@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EditMind - O Copiloto do Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        laranja: { 500: '#f97316', 600: '#ea580c' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center justify-center p-6 font-sans">
+
+    <div class="text-center mb-10">
+        <h1 class="text-5xl font-extrabold tracking-tight mb-2">
+            Edit<span class="text-laranja-500">Mind</span>
+        </h1>
+        <p class="text-gray-400 text-lg">Seu copiloto inteligente de edição.</p>
+    </div>
+
+    <div class="w-full max-w-2xl bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-700">
+        
+        <div id="area-soltar" class="border-2 border-dashed border-gray-600 rounded-xl p-12 text-center transition-all duration-300 hover:border-laranja-500 hover:bg-gray-700 cursor-pointer flex flex-col items-center justify-center">
+            
+            <svg class="w-16 h-16 text-gray-400 mb-4 transition-colors duration-300 group-hover:text-laranja-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+            </svg>
+            
+            <h3 class="text-xl font-semibold mb-2 text-gray-200">Arraste e solte seu vídeo aqui</h3>
+            <p class="text-sm text-gray-500 mb-6">ou clique para procurar (MP4, MOV)</p>
+            
+            <input type="file" id="entrada-arquivo" class="hidden" accept="video/mp4,video/quicktime" />
+            
+            <button onclick="document.getElementById('entrada-arquivo').click()" class="bg-laranja-600 hover:bg-laranja-500 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200">
+                Selecionar Arquivo
+            </button>
+        </div>
+
+        <div id="status-envio" class="hidden mt-8">
+            <div class="flex justify-between items-center mb-2">
+                <span id="nome-arquivo" class="text-sm font-medium text-gray-300 truncate w-3/4">video_bruto.mp4</span>
+                <span id="porcentagem-envio" class="text-sm font-bold text-laranja-500">0%</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2.5">
+                <div id="barra-progresso" class="bg-laranja-500 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+            <p id="mensagem-envio" class="text-xs text-gray-400 mt-2 text-center">Iniciando envio...</p>
+        </div>
+
+    </div>
+
+    <script>
+        const areaSoltar = document.getElementById('area-soltar');
+        const entradaArquivo = document.getElementById('entrada-arquivo');
+        const statusEnvio = document.getElementById('status-envio');
+        const exibicaoNomeArquivo = document.getElementById('nome-arquivo');
+
+        // Impede o navegador de abrir o vídeo sozinho ao soltar na tela
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(nomeEvento => {
+            areaSoltar.addEventListener(nomeEvento, (evento) => {
+                evento.preventDefault();
+                evento.stopPropagation();
+            }, false);
+        });
+
+        // Efeitos visuais ao arrastar por cima
+        ['dragenter', 'dragover'].forEach(nomeEvento => {
+            areaSoltar.addEventListener(nomeEvento, () => areaSoltar.classList.add('border-laranja-500', 'bg-gray-700'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(nomeEvento => {
+            areaSoltar.addEventListener(nomeEvento, () => areaSoltar.classList.remove('border-laranja-500', 'bg-gray-700'), false);
+        });
+
+        // Gatilhos para capturar o arquivo
+        areaSoltar.addEventListener('drop', (evento) => processarArquivos(evento.dataTransfer.files), false);
+        entradaArquivo.addEventListener('change', (evento) => processarArquivos(evento.target.files), false);
+
+        // PILAR 3: Validação e Envio para o Back-end
+        async function processarArquivos(arquivos) {
+            if (arquivos.length === 0) return;
+            
+            const arquivoDeVideo = arquivos[0];
+            
+            if (!arquivoDeVideo.type.startsWith('video/')) {
+                alert('Atenção: O EditMind aceita apenas arquivos de vídeo.');
+                return;
+            }
+
+            // Prepara a interface para o upload
+            exibicaoNomeArquivo.textContent = arquivoDeVideo.name;
+            statusEnvio.classList.remove('hidden');
+            
+            const barraProgresso = document.getElementById('barra-progresso');
+            const textoPorcentagem = document.getElementById('porcentagem-envio');
+            const textoMensagem = document.getElementById('mensagem-envio');
+
+            // Empacota o arquivo para a viagem
+            const dadosFormulario = new FormData();
+            dadosFormulario.append('arquivo', arquivoDeVideo);
+
+            try {
+                barraProgresso.style.width = '50%';
+                textoPorcentagem.textContent = 'Enviando...';
+                textoMensagem.textContent = 'Transferindo para o servidor EditMind...';
+
+                // Dispara a requisição para a nossa API em Python
+                const resposta = await fetch('http://127.0.0.1:8000/api/upload', {
+                    method: 'POST',
+                    body: dadosFormulario
+                });
+
+                const dadosServidor = await resposta.json();
+
+                if (resposta.ok) {
+                    barraProgresso.style.width = '100%';
+                    textoPorcentagem.textContent = '100%';
+                    
+                    // Monta a mensagem final com o Efeito Uau
+                    const infos = dadosServidor.detalhes_tecnicos;
+                    if (!infos.erro) {
+                        textoMensagem.innerHTML = `Sucesso! Arquivo salvo (${dadosServidor.tamanho_mb} MB).<br> <b>Resolução:</b> ${infos.resolucao} | <b>Duração:</b> ${infos.duracao_segundos}s | <b>FPS:</b> ${infos.fps}`;
+                    } else {
+                        textoMensagem.textContent = `Sucesso! Arquivo salvo (${dadosServidor.tamanho_mb} MB).`;
+                    }
+                    
+                    textoMensagem.classList.replace('text-gray-400', 'text-green-500');
+                }
+                 else {
+                    throw new Error(dadosServidor.detail);
+                }
+
+            } catch (erro) {
+                textoMensagem.textContent = "Erro na conexão: " + erro.message;
+                textoMensagem.classList.replace('text-gray-400', 'text-red-500');
+                barraProgresso.classList.replace('bg-laranja-500', 'bg-red-500');
+            }
+        }
+    </script>
+</body>
+</html>

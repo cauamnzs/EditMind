@@ -1,0 +1,10 @@
+# Ambiente Virtual do Python
+backend/venv/
+backend/__pycache__/
+
+# Pastas de Upload (Não queremos subir vídeos pesados da nossa máquina local)
+backend/uploads/
+
+# Arquivos de sistema do Windows/Mac
+.DS_Store
+Thumbs.db
