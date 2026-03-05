@@ -60,9 +60,11 @@ Desenvolvido com foco na usabilidade de editores profissionais:
     venv\Scripts\activate
     # Linux/Mac:
     source venv/bin/activate
+
+    
     pip install -r requirements.txt
 
-3.  Inicie o Servidor:
+4.  Inicie o Servidor:
   
     uvicorn main:app --reload
 
