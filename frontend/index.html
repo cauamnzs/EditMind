@@ -3,145 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EditMind - O Copiloto do Editor</title>
+    <title>EditMind | Copiloto de Edição Inteligente</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        laranja: { 500: '#f97316', 600: '#ea580c' }
-                    }
-                }
-            }
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Fundo com degradê radial para dar profundidade (Dark Fusion) */
+            background: radial-gradient(circle at 50% -20%, #25160d, #0b0d11 60%);
         }
-    </script>
+        .glass-panel {
+            background: rgba(26, 29, 38, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .orange-glow {
+            box-shadow: 0 0 30px rgba(249, 115, 22, 0.15);
+        }
+        .bento-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .bento-card:hover {
+            border-color: #f97316;
+            background: rgba(249, 115, 22, 0.03);
+            transform: translateY(-2px);
+        }
+        /* Animação suave para o progresso */
+        #barra-progresso {
+            transition: width 0.5s ease-out;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col items-center justify-center p-6 font-sans">
+<body class="text-gray-100 min-h-screen flex items-center justify-center p-6">
 
-    <div class="text-center mb-10">
-        <h1 class="text-5xl font-extrabold tracking-tight mb-2">
-            Edit<span class="text-laranja-500">Mind</span>
-        </h1>
-        <p class="text-gray-400 text-lg">Seu copiloto inteligente de edição.</p>
-    </div>
-
-    <div class="w-full max-w-2xl bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-700">
+    <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         
-        <div id="area-soltar" class="border-2 border-dashed border-gray-600 rounded-xl p-12 text-center transition-all duration-300 hover:border-laranja-500 hover:bg-gray-700 cursor-pointer flex flex-col items-center justify-center">
-            
-            <svg class="w-16 h-16 text-gray-400 mb-4 transition-colors duration-300 group-hover:text-laranja-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-            </svg>
-            
-            <h3 class="text-xl font-semibold mb-2 text-gray-200">Arraste e solte seu vídeo aqui</h3>
-            <p class="text-sm text-gray-500 mb-6">ou clique para procurar (MP4, MOV)</p>
-            
-            <input type="file" id="entrada-arquivo" class="hidden" accept="video/mp4,video/quicktime" />
-            
-            <button onclick="document.getElementById('entrada-arquivo').click()" class="bg-laranja-600 hover:bg-laranja-500 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200">
-                Selecionar Arquivo
-            </button>
+        <div class="lg:col-span-12 text-center mb-2">
+            <h1 class="text-6xl font-extrabold italic tracking-tighter text-white">
+                EDIT<span class="text-[#f97316] drop-shadow-[0_0_15px_rgba(249,115,22,0.4)]">MIND</span>
+            </h1>
+            <p class="text-gray-500 font-light tracking-[0.3em] uppercase text-[10px] mt-2">Intelligence for Video Creators</p>
         </div>
 
-        <div id="status-envio" class="hidden mt-8">
-            <div class="flex justify-between items-center mb-2">
-                <span id="nome-arquivo" class="text-sm font-medium text-gray-300 truncate w-3/4">video_bruto.mp4</span>
-                <span id="porcentagem-envio" class="text-sm font-bold text-laranja-500">0%</span>
+        <div class="lg:col-span-7">
+            <div id="area-soltar" class="glass-panel rounded-[2.5rem] p-12 h-full border-2 border-dashed border-gray-800 flex flex-col items-center justify-center group cursor-pointer hover:border-[#f97316] transition-all duration-500 orange-glow">
+                
+                <div class="relative w-28 h-28 mb-8">
+                    <div class="absolute inset-0 bg-[#f97316] rounded-full blur-3xl opacity-10 group-hover:opacity-30 transition-opacity"></div>
+                    <svg class="relative w-full h-full text-gray-600 group-hover:text-[#f97316] transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                
+                <h3 class="text-2xl font-bold text-white mb-2">Processar Novo Corte</h3>
+                <p class="text-gray-500 text-center max-w-xs leading-relaxed mb-8">Arraste seu vídeo bruto ou clique para navegar pelos arquivos.</p>
+                
+                <input type="file" id="entrada-arquivo" class="hidden" accept="video/mp4,video/quicktime" />
+                
+                <button onclick="document.getElementById('entrada-arquivo').click()" class="bg-[#f97316] hover:bg-[#ea580c] text-white font-black py-4 px-10 rounded-2xl text-sm uppercase tracking-widest shadow-lg hover:scale-105 active:scale-95 transition-all">
+                    Selecionar Mídia
+                </button>
             </div>
-            <div class="w-full bg-gray-700 rounded-full h-2.5">
-                <div id="barra-progresso" class="bg-laranja-500 h-2.5 rounded-full" style="width: 0%"></div>
-            </div>
-            <p id="mensagem-envio" class="text-xs text-gray-400 mt-2 text-center">Iniciando envio...</p>
         </div>
 
+        <div class="lg:col-span-5 grid grid-cols-2 gap-4">
+            
+            <div id="status-envio" class="col-span-2 glass-panel p-8 rounded-[2rem] flex flex-col justify-between min-h-[160px]">
+                <div class="flex justify-between items-start mb-6">
+                    <span class="text-[10px] text-gray-500 uppercase font-black tracking-[0.2em]">Live Status</span>
+                    <span id="porcentagem-envio" class="text-4xl font-black text-white">0%</span>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between text-[11px] mb-2 font-semibold">
+                        <span id="nome-arquivo" class="text-gray-400 truncate w-2/3 italic">Aguardando arquivo...</span>
+                    </div>
+                    <div class="w-full bg-gray-900 rounded-full h-2 overflow-hidden">
+                        <div id="barra-progresso" class="bg-[#f97316] h-full w-0 orange-glow"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-[1.5rem] bento-card">
+                <span class="text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-2">Resolução</span>
+                <span id="meta-res" class="text-xl font-bold text-white tracking-tighter">—</span>
+            </div>
+            
+            <div class="glass-panel p-6 rounded-[1.5rem] bento-card">
+                <span class="text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-2">Framerate</span>
+                <span id="meta-fps" class="text-xl font-bold text-white tracking-tighter">—</span>
+            </div>
+
+            <div class="col-span-2 glass-panel p-6 rounded-[2rem] bento-card flex justify-between items-center">
+                <div>
+                    <span class="text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-1">Duração Estimada</span>
+                    <span id="meta-duracao" class="text-3xl font-black text-white tracking-tighter">—</span>
+                </div>
+                <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center text-[#f97316]">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="col-span-2 p-4 text-center">
+                <p id="mensagem-envio" class="text-[11px] text-gray-500 italic leading-relaxed">
+                    Certifique-se de que o motor Python está ativo em localhost:8000 para processar o áudio via FFmpeg.
+                </p>
+            </div>
+        </div>
     </div>
 
     <script>
         const areaSoltar = document.getElementById('area-soltar');
         const entradaArquivo = document.getElementById('entrada-arquivo');
-        const statusEnvio = document.getElementById('status-envio');
-        const exibicaoNomeArquivo = document.getElementById('nome-arquivo');
+        const nomeArquivoTexto = document.getElementById('nome-arquivo');
+        const barraProgresso = document.getElementById('barra-progresso');
+        const porcentagemTexto = document.getElementById('porcentagem-envio');
+        const mensagemTexto = document.getElementById('mensagem-envio');
 
-        // Impede o navegador de abrir o vídeo sozinho ao soltar na tela
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(nomeEvento => {
-            areaSoltar.addEventListener(nomeEvento, (evento) => {
-                evento.preventDefault();
-                evento.stopPropagation();
-            }, false);
+        // Campos do Bento Grid
+        const metaRes = document.getElementById('meta-res');
+        const metaFps = document.getElementById('meta-fps');
+        const metaDuracao = document.getElementById('meta-duracao');
+
+        // Eventos de Drag & Drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+            areaSoltar.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); });
         });
 
-        // Efeitos visuais ao arrastar por cima
-        ['dragenter', 'dragover'].forEach(nomeEvento => {
-            areaSoltar.addEventListener(nomeEvento, () => areaSoltar.classList.add('border-laranja-500', 'bg-gray-700'), false);
+        ['dragenter', 'dragover'].forEach(evt => {
+            areaSoltar.addEventListener(evt, () => areaSoltar.classList.add('border-[#f97316]', 'bg-gray-800/50'));
         });
 
-        ['dragleave', 'drop'].forEach(nomeEvento => {
-            areaSoltar.addEventListener(nomeEvento, () => areaSoltar.classList.remove('border-laranja-500', 'bg-gray-700'), false);
+        ['dragleave', 'drop'].forEach(evt => {
+            areaSoltar.addEventListener(evt, () => areaSoltar.classList.remove('border-[#f97316]', 'bg-gray-800/50'));
         });
 
-        // Gatilhos para capturar o arquivo
-        areaSoltar.addEventListener('drop', (evento) => processarArquivos(evento.dataTransfer.files), false);
-        entradaArquivo.addEventListener('change', (evento) => processarArquivos(evento.target.files), false);
+        areaSoltar.addEventListener('drop', e => processarArquivos(e.dataTransfer.files));
+        entradaArquivo.addEventListener('change', e => processarArquivos(e.target.files));
 
-        // PILAR 3: Validação e Envio para o Back-end
         async function processarArquivos(arquivos) {
             if (arquivos.length === 0) return;
+            const arquivo = arquivos[0];
             
-            const arquivoDeVideo = arquivos[0];
-            
-            if (!arquivoDeVideo.type.startsWith('video/')) {
-                alert('Atenção: O EditMind aceita apenas arquivos de vídeo.');
+            if (!arquivo.type.startsWith('video/')) {
+                alert('O EditMind aceita apenas arquivos de vídeo.');
                 return;
             }
 
-            // Prepara a interface para o upload
-            exibicaoNomeArquivo.textContent = arquivoDeVideo.name;
-            statusEnvio.classList.remove('hidden');
-            
-            const barraProgresso = document.getElementById('barra-progresso');
-            const textoPorcentagem = document.getElementById('porcentagem-envio');
-            const textoMensagem = document.getElementById('mensagem-envio');
+            nomeArquivoTexto.textContent = arquivo.name;
+            mensagemTexto.textContent = 'Transferindo para o motor de IA...';
+            mensagemTexto.classList.replace('text-green-500', 'text-gray-500');
 
-            // Empacota o arquivo para a viagem
-            const dadosFormulario = new FormData();
-            dadosFormulario.append('arquivo', arquivoDeVideo);
+            const dados = new FormData();
+            dados.append('arquivo', arquivo);
 
             try {
-                barraProgresso.style.width = '50%';
-                textoPorcentagem.textContent = 'Enviando...';
-                textoMensagem.textContent = 'Transferindo para o servidor EditMind...';
+                // Simulação visual de início
+                barraProgresso.style.width = '15%';
+                porcentagemTexto.textContent = '15%';
 
-                // Dispara a requisição para a nossa API em Python
                 const resposta = await fetch('http://127.0.0.1:8000/api/upload', {
                     method: 'POST',
-                    body: dadosFormulario
+                    body: dados
                 });
 
-                const dadosServidor = await resposta.json();
+                const resultado = await resposta.json();
 
                 if (resposta.ok) {
                     barraProgresso.style.width = '100%';
-                    textoPorcentagem.textContent = '100%';
+                    porcentagemTexto.textContent = '100%';
                     
-                    // Monta a mensagem final com o Efeito Uau
-                    const infos = dadosServidor.detalhes_tecnicos;
-                    if (!infos.erro) {
-                        textoMensagem.innerHTML = `Sucesso! Arquivo salvo (${dadosServidor.tamanho_mb} MB).<br> <b>Resolução:</b> ${infos.resolucao} | <b>Duração:</b> ${infos.duracao_segundos}s | <b>FPS:</b> ${infos.fps}`;
-                    } else {
-                        textoMensagem.textContent = `Sucesso! Arquivo salvo (${dadosServidor.tamanho_mb} MB).`;
-                    }
+                    const infos = resultado.detalhes_tecnicos;
                     
-                    textoMensagem.classList.replace('text-gray-400', 'text-green-500');
-                }
-                 else {
-                    throw new Error(dadosServidor.detail);
-                }
+                    // Preenche o Bento Grid com os dados reais do seu Back-end
+                    metaRes.textContent = infos.resolucao || 'N/A';
+                    metaFps.textContent = `${infos.fps} FPS` || 'N/A';
+                    metaDuracao.textContent = `${infos.duracao_segundos}s` || 'N/A';
 
+                    mensagemTexto.innerHTML = `✓ Processamento Concluído (${resultado.tamanho_mb} MB)`;
+                    mensagemTexto.classList.replace('text-gray-500', 'text-green-500');
+                } else {
+                    throw new Error(resultado.detail || 'Falha no servidor');
+                }
             } catch (erro) {
-                textoMensagem.textContent = "Erro na conexão: " + erro.message;
-                textoMensagem.classList.replace('text-gray-400', 'text-red-500');
-                barraProgresso.classList.replace('bg-laranja-500', 'bg-red-500');
+                mensagemTexto.textContent = "Erro: " + erro.message;
+                mensagemTexto.classList.replace('text-gray-500', 'text-red-500');
+                barraProgresso.classList.replace('bg-[#f97316]', 'bg-red-500');
             }
         }
     </script>
