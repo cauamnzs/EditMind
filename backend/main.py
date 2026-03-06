@@ -1,10 +1,12 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 import shutil
 import os
 import uuid
 import subprocess
 import json
+import yt_dlp
 
 app = FastAPI(title="EditMind API")
 
@@ -21,7 +23,7 @@ app.add_middleware(
 DIRETORIO_VIDEOS = "uploads/videos"
 DIRETORIO_AUDIOS = "uploads/audios"
 os.makedirs(DIRETORIO_VIDEOS, exist_ok=True)
-os.makedirs(DIRETORIO_AUDIOS, exist_ok=True) # Nova pasta garantida no sistema
+os.makedirs(DIRETORIO_AUDIOS, exist_ok=True)
 
 # --- FUNÇÃO 1: Extração de Metadados ---
 def extrair_metadados_video(caminho_arquivo):
@@ -55,41 +57,38 @@ def extrair_metadados_video(caminho_arquivo):
 
 # --- FUNÇÃO 2: A Mágica do Áudio ---
 def extrair_audio_para_ia(caminho_video, nome_arquivo_base):
-    """
-    Usa o FFmpeg para ignorar o vídeo e salvar apenas a faixa de áudio em MP3.
-    """
     try:
         nome_audio = f"{nome_arquivo_base}.mp3"
         caminho_audio = os.path.join(DIRETORIO_AUDIOS, nome_audio)
         
-        # Comando do FFmpeg
         comando = [
             "ffmpeg",
-            "-i", caminho_video,     # Entrada: o vídeo pesado
-            "-vn",                   # Comando chave: Video No (ignora a imagem)
-            "-acodec", "libmp3lame", # Força a conversão para MP3 leve
-            "-q:a", "2",             # Qualidade do áudio (2 é excelente para voz)
-            "-y",                    # Sobrescreve silenciosamente se já existir
-            caminho_audio            # Saída: o arquivo final
+            "-i", caminho_video,     
+            "-vn",                   
+            "-acodec", "libmp3lame", 
+            "-q:a", "2",             
+            "-y",                    
+            caminho_audio            
         ]
         
-        # Executa silenciosamente no terminal do Windows
         subprocess.run(comando, capture_output=True, check=True)
         return nome_audio
     except Exception as erro:
         print(f"Erro ao extrair áudio: {erro}")
         return None
 
-# PILAR 2: Rota Principal de Upload
+# ==========================================
+# ROTAS DA API
+# ==========================================
+
+# ROTA 1: Upload Manual (O que já funcionava)
 @app.post("/api/upload")
 async def receber_video_upload(arquivo: UploadFile = File(...)):
-    
     if not arquivo.content_type.startswith("video/"):
         raise HTTPException(status_code=400, detail="Formato inválido. O sistema aceita apenas vídeos.")
 
-    # PILAR 3: Segurança e Salvamento
     extensao_arquivo = arquivo.filename.split(".")[-1]
-    id_unico = str(uuid.uuid4()) # Separamos o ID para usar no vídeo e no áudio
+    id_unico = str(uuid.uuid4())
     nome_seguro_video = f"{id_unico}.{extensao_arquivo}"
     caminho_final_video = os.path.join(DIRETORIO_VIDEOS, nome_seguro_video)
 
@@ -101,11 +100,8 @@ async def receber_video_upload(arquivo: UploadFile = File(...)):
     finally:
         arquivo.file.close()
 
-    # PILAR 4: Extrações em Segundo Plano
     tamanho_em_megabytes = round(os.path.getsize(caminho_final_video) / (1024 * 1024), 2)
     metadados = extrair_metadados_video(caminho_final_video)
-    
-    # É aqui que o áudio nasce!
     nome_audio_gerado = extrair_audio_para_ia(caminho_final_video, id_unico)
 
     return {
@@ -117,3 +113,47 @@ async def receber_video_upload(arquivo: UploadFile = File(...)):
         "tamanho_mb": tamanho_em_megabytes,
         "detalhes_tecnicos": metadados
     }
+
+# --- NOVA ROTA: YOUTUBE DOWNLOADER ---
+class DadosYoutube(BaseModel):
+    url: str
+
+@app.post("/api/download-youtube")
+async def baixar_video_youtube(dados: DadosYoutube):
+    if not "youtube.com" in dados.url and not "youtu.be" in dados.url:
+         raise HTTPException(status_code=400, detail="Por favor, insira um link válido do YouTube.")
+         
+    id_unico = str(uuid.uuid4())
+    nome_seguro_video = f"yt_{id_unico}.mp4"
+    caminho_final_video = os.path.join(DIRETORIO_VIDEOS, nome_seguro_video)
+    
+    # Configurações do yt-dlp para pegar a melhor qualidade e juntar em MP4
+    opcoes_download = {
+        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+        'outtmpl': caminho_final_video,
+        'merge_output_format': 'mp4',
+        'quiet': True,
+    }
+
+    try:
+        # Baixa o vídeo
+        with yt_dlp.YoutubeDL(opcoes_download) as ydl:
+            ydl.extract_info(dados.url, download=True)
+            
+        # O vídeo já está no PC. Agora passamos pelo mesmo Raio-X de sempre!
+        tamanho_em_megabytes = round(os.path.getsize(caminho_final_video) / (1024 * 1024), 2)
+        metadados = extrair_metadados_video(caminho_final_video)
+        nome_audio_gerado = extrair_audio_para_ia(caminho_final_video, f"yt_{id_unico}")
+
+        return {
+            "status": "sucesso",
+            "mensagem": "Download concluído, vídeo processado e áudio extraído!",
+            "nome_original": "Video do YouTube",
+            "video_salvo": nome_seguro_video,
+            "audio_salvo": nome_audio_gerado,
+            "tamanho_mb": tamanho_em_megabytes,
+            "detalhes_tecnicos": metadados
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao baixar do YouTube: {str(e)}")

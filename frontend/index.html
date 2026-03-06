@@ -3,118 +3,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EditMind | Copiloto de Edição Inteligente</title>
+    <title>EditMind | Creator Copilot</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            /* Fundo com degradê radial para dar profundidade (Dark Fusion) */
             background: radial-gradient(circle at 50% -20%, #25160d, #0b0d11 60%);
+            background-attachment: fixed;
+            overflow: hidden; 
         }
+        
         .glass-panel {
-            background: rgba(26, 29, 38, 0.7);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(26, 29, 38, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
+        
         .orange-glow {
-            box-shadow: 0 0 30px rgba(249, 115, 22, 0.15);
+            box-shadow: 0 0 40px rgba(249, 115, 22, 0.15);
         }
+
         .bento-card {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .bento-card:hover {
-            border-color: #f97316;
-            background: rgba(249, 115, 22, 0.03);
-            transform: translateY(-2px);
+            border-color: rgba(249, 115, 22, 0.5);
+            background: rgba(249, 115, 22, 0.02);
+            transform: translateY(-4px);
         }
-        /* Animação suave para o progresso */
-        #barra-progresso {
-            transition: width 0.5s ease-out;
+
+        /* Animações do Dock Flutuante */
+        .nav-item {
+            transition: all 0.3s ease;
         }
+        .nav-item .nav-text {
+            transition: all 0.3s ease;
+        }
+        .nav-item .nav-dot {
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Estado Ativo no Dock */
+        .nav-item.active {
+            color: #f97316;
+        }
+        .nav-item.active .nav-icon {
+            transform: translateY(-3px) scale(1.1);
+            filter: drop-shadow(0 0 10px rgba(249,115,22,0.8));
+        }
+        .nav-item.active .nav-text {
+            color: #f97316;
+            font-weight: 800;
+        }
+        .nav-item.active .nav-dot {
+            opacity: 1;
+            transform: scale(1);
+            background-color: #f97316;
+            box-shadow: 0 0 12px #f97316;
+        }
+
+        /* Transição Suave entre Abas */
+        .view-section {
+            display: none;
+            opacity: 0;
+            transform: scale(0.98) translateY(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .view-section.active {
+            display: block;
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f97316; }
     </style>
 </head>
-<body class="text-gray-100 min-h-screen flex items-center justify-center p-6">
+<body class="text-gray-100 h-screen flex flex-col">
 
-    <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-        
-        <div class="lg:col-span-12 text-center mb-2">
-            <h1 class="text-6xl font-extrabold italic tracking-tighter text-white">
-                EDIT<span class="text-[#f97316] drop-shadow-[0_0_15px_rgba(249,115,22,0.4)]">MIND</span>
+    <header class="w-full flex justify-between items-center px-10 py-6 z-20">
+        <div>
+            <h1 class="text-3xl font-extrabold italic tracking-tighter text-white cursor-pointer hover:scale-105 transition-transform">
+                EDIT<span class="text-[#f97316] drop-shadow-[0_0_15px_rgba(249,115,22,0.5)]">MIND</span>
             </h1>
-            <p class="text-gray-500 font-light tracking-[0.3em] uppercase text-[10px] mt-2">Intelligence for Video Creators</p>
         </div>
 
-        <div class="lg:col-span-7">
-            <div id="area-soltar" class="glass-panel rounded-[2.5rem] p-12 h-full border-2 border-dashed border-gray-800 flex flex-col items-center justify-center group cursor-pointer hover:border-[#f97316] transition-all duration-500 orange-glow">
-                
-                <div class="relative w-28 h-28 mb-8">
-                    <div class="absolute inset-0 bg-[#f97316] rounded-full blur-3xl opacity-10 group-hover:opacity-30 transition-opacity"></div>
-                    <svg class="relative w-full h-full text-gray-600 group-hover:text-[#f97316] transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                    </svg>
-                </div>
-                
-                <h3 class="text-2xl font-bold text-white mb-2">Processar Novo Corte</h3>
-                <p class="text-gray-500 text-center max-w-xs leading-relaxed mb-8">Arraste seu vídeo bruto ou clique para navegar pelos arquivos.</p>
-                
-                <input type="file" id="entrada-arquivo" class="hidden" accept="video/mp4,video/quicktime" />
-                
-                <button onclick="document.getElementById('entrada-arquivo').click()" class="bg-[#f97316] hover:bg-[#ea580c] text-white font-black py-4 px-10 rounded-2xl text-sm uppercase tracking-widest shadow-lg hover:scale-105 active:scale-95 transition-all">
-                    Selecionar Mídia
-                </button>
+        <div class="glass-panel rounded-full pl-4 pr-2 py-2 flex items-center gap-4 cursor-pointer hover:border-[#f97316] transition-colors group">
+            <div class="flex flex-col text-right">
+                <span class="text-xs font-bold text-white group-hover:text-[#f97316] transition-colors">Equipe EditMind</span>
+                <span class="text-[9px] text-gray-400 tracking-widest uppercase">Plano Pro</span>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#f97316] to-purple-800 flex items-center justify-center shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+                <span class="text-white font-black text-xs tracking-tighter">EM</span>
             </div>
         </div>
+    </header>
 
-        <div class="lg:col-span-5 grid grid-cols-2 gap-4">
-            
-            <div id="status-envio" class="col-span-2 glass-panel p-8 rounded-[2rem] flex flex-col justify-between min-h-[160px]">
-                <div class="flex justify-between items-start mb-6">
-                    <span class="text-[10px] text-gray-500 uppercase font-black tracking-[0.2em]">Live Status</span>
-                    <span id="porcentagem-envio" class="text-4xl font-black text-white">0%</span>
-                </div>
-                
-                <div>
-                    <div class="flex justify-between text-[11px] mb-2 font-semibold">
-                        <span id="nome-arquivo" class="text-gray-400 truncate w-2/3 italic">Aguardando arquivo...</span>
+    <main class="flex-1 overflow-y-auto px-10 pb-48 pt-4 w-full max-w-7xl mx-auto">
+        
+        <div id="aba-inicio" class="view-section active w-full">
+            <div class="mb-10 text-center">
+                <h2 class="text-4xl font-black text-white tracking-tight">Novo Projeto</h2>
+                <p class="text-gray-500 text-sm mt-2">Alimente a IA com seu arquivo bruto.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                <div class="lg:col-span-7">
+                    <div id="area-soltar" class="glass-panel rounded-[3rem] p-12 h-full min-h-[420px] border border-gray-800 flex flex-col items-center justify-center group cursor-pointer hover:border-[#f97316] transition-all duration-500 orange-glow relative overflow-hidden">
+                        
+                        <div class="absolute inset-0 bg-gradient-to-b from-[#f97316]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+
+                        <div class="relative w-28 h-28 mb-8 z-10">
+                            <div class="absolute inset-0 bg-[#f97316] rounded-full blur-[40px] opacity-10 group-hover:opacity-40 transition-opacity duration-500"></div>
+                            <svg class="relative w-full h-full text-gray-500 group-hover:text-[#f97316] transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-2 z-10">Arraste a Mídia Aqui</h3>
+                        <p class="text-gray-500 text-center text-sm max-w-xs leading-relaxed mb-8 z-10">Suporta MP4 e MOV para extração de alta fidelidade.</p>
+                        
+                        <input type="file" id="entrada-arquivo" class="hidden" accept="video/mp4,video/quicktime" />
+                        
+                        <button onclick="document.getElementById('entrada-arquivo').click()" class="z-10 bg-[#f97316] hover:bg-[#ea580c] text-white font-black py-4 px-10 rounded-full text-xs uppercase tracking-widest shadow-[0_10px_30px_rgba(249,115,22,0.3)] hover:scale-105 active:scale-95 transition-all">
+                            Selecionar Arquivo
+                        </button>
                     </div>
-                    <div class="w-full bg-gray-900 rounded-full h-2 overflow-hidden">
-                        <div id="barra-progresso" class="bg-[#f97316] h-full w-0 orange-glow"></div>
+                </div>
+
+                <div class="lg:col-span-5 grid grid-cols-2 gap-5">
+                    <div id="status-envio" class="col-span-2 glass-panel p-8 rounded-[2.5rem] flex flex-col justify-between min-h-[160px]">
+                        <div class="flex justify-between items-start mb-6">
+                            <span class="text-[10px] text-gray-500 uppercase font-black tracking-[0.2em]">Engine Status</span>
+                            <span id="porcentagem-envio" class="text-4xl font-black text-white">0%</span>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-3 font-semibold">
+                                <span id="nome-arquivo" class="text-gray-400 truncate w-3/4 italic">Aguardando feed...</span>
+                            </div>
+                            <div class="w-full bg-gray-900 rounded-full h-2 overflow-hidden shadow-inner">
+                                <div id="barra-progresso" class="bg-gradient-to-r from-[#f97316] to-yellow-500 h-full w-0 transition-all duration-500 shadow-[0_0_10px_#f97316]"></div>
+                            </div>
+                            <p id="mensagem-envio" class="text-[11px] text-gray-500 mt-3 italic text-center">Motor Python em Standby.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-[2rem] bento-card">
+                        <span class="text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-2">Resolução</span>
+                        <span id="meta-res" class="text-xl font-bold text-white tracking-tighter">—</span>
+                    </div>
+                    
+                    <div class="glass-panel p-6 rounded-[2rem] bento-card">
+                        <span class="text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-2">Framerate</span>
+                        <span id="meta-fps" class="text-xl font-bold text-white tracking-tighter">—</span>
+                    </div>
+
+                    <div class="col-span-2 glass-panel p-6 rounded-[2.5rem] bento-card flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-1">Duração Total</span>
+                            <span id="meta-duracao" class="text-3xl font-black text-white tracking-tighter">—</span>
+                        </div>
+                        <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center text-[#f97316]">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="glass-panel p-6 rounded-[1.5rem] bento-card">
-                <span class="text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-2">Resolução</span>
-                <span id="meta-res" class="text-xl font-bold text-white tracking-tighter">—</span>
+        <div id="aba-conteudos" class="view-section w-full">
+            <div class="mb-10 text-center">
+                <h2 class="text-4xl font-black text-white tracking-tight">Meus Conteúdos</h2>
+                <p class="text-gray-500 text-sm mt-2">Sua esteira de cortes aprovados.</p>
             </div>
-            
-            <div class="glass-panel p-6 rounded-[1.5rem] bento-card">
-                <span class="text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-2">Framerate</span>
-                <span id="meta-fps" class="text-xl font-bold text-white tracking-tighter">—</span>
-            </div>
-
-            <div class="col-span-2 glass-panel p-6 rounded-[2rem] bento-card flex justify-between items-center">
-                <div>
-                    <span class="text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-1">Duração Estimada</span>
-                    <span id="meta-duracao" class="text-3xl font-black text-white tracking-tighter">—</span>
+            <div class="glass-panel rounded-[3rem] p-20 flex flex-col items-center justify-center text-center">
+                <div class="w-24 h-24 bg-gray-800/40 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 </div>
-                <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center text-[#f97316]">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-            </div>
-
-            <div class="col-span-2 p-4 text-center">
-                <p id="mensagem-envio" class="text-[11px] text-gray-500 italic leading-relaxed">
-                    Certifique-se de que o motor Python está ativo em localhost:8000 para processar o áudio via FFmpeg.
-                </p>
+                <h3 class="text-2xl font-bold text-white mb-2">Vazio por aqui</h3>
+                <p class="text-gray-500 text-sm max-w-sm mb-8">Nenhum lote foi processado. Inicie fazendo o upload do seu primeiro arquivo bruto.</p>
+                <button onclick="mudarAba('inicio')" class="px-8 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-full text-xs tracking-widest uppercase transition-all border border-gray-700 hover:border-gray-500">Voltar ao Início</button>
             </div>
         </div>
+
+        <div id="aba-ferramentas" class="view-section w-full">
+            <div class="mb-10 text-center">
+                <h2 class="text-4xl font-black text-white tracking-tight">Ferramentas Extras</h2>
+                <p class="text-gray-500 text-sm mt-2">Utilitários de alta performance para criadores.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="glass-panel rounded-[2.5rem] p-8 bento-card relative overflow-hidden group">
+                    <div class="absolute -right-16 -top-16 w-56 h-56 bg-red-600/10 rounded-full blur-[50px] group-hover:bg-red-600/20 transition-all duration-700"></div>
+                    
+                    <div class="flex items-center mb-8 relative z-10">
+                        <div class="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center mr-5 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+                            <svg class="w-7 h-7 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white tracking-tight">YT Downloader</h3>
+                            <p class="text-xs text-gray-500 font-medium">Extração direta em 1080p</p>
+                        </div>
+                    </div>
+                    
+                    <div class="relative z-10">
+                        <label class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3">URL do Vídeo Original</label>
+                        <input type="text" id="input-youtube" placeholder="https://youtube.com/..." class="w-full bg-[#0b0d11]/80 border border-gray-800 rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors mb-5 shadow-inner">
+                        
+                        <button onclick="baixarYouTube()" id="btn-youtube" button class="w-full bg-white/5 hover:bg-red-600 text-gray-300 hover:text-white font-bold py-4 rounded-2xl text-sm transition-all flex items-center justify-center border border-gray-700 hover:border-red-500 shadow-lg hover:shadow-[0_0_20px_rgba(239,68,68,0.4)]">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Puxar para Nuvem
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-[2.5rem] border border-gray-800 border-dashed p-8 flex flex-col items-center justify-center opacity-40">
+                    <svg class="w-10 h-10 text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                    <p class="text-xs font-black tracking-widest uppercase text-gray-500">Módulo em Construção</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="aba-configs" class="view-section w-full">
+            <div class="mb-10 text-center">
+                <h2 class="text-4xl font-black text-white tracking-tight">Ajustes da Engine</h2>
+                <p class="text-gray-500 text-sm mt-2">Configure o comportamento da Inteligência Artificial.</p>
+            </div>
+            <div class="glass-panel rounded-[3rem] p-12 text-center">
+                <p class="text-gray-500 text-sm">Painel de variáveis em desenvolvimento.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50">
+        <nav class="glass-panel rounded-[2rem] px-12 py-5 flex items-center gap-14 shadow-[0_30px_60px_rgba(0,0,0,0.7)] border border-gray-700/50">
+            
+            <button onclick="mudarAba('inicio')" class="nav-item active flex flex-col items-center justify-center text-gray-500 hover:text-white w-20 relative group">
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#f97316] rounded-full blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
+                
+                <svg class="w-8 h-8 mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span class="nav-text text-[10px] font-black uppercase tracking-widest">Início</span>
+                <div class="nav-dot w-1.5 h-1.5 rounded-full mt-2"></div>
+            </button>
+
+            <button onclick="mudarAba('conteudos')" class="nav-item flex flex-col items-center justify-center text-gray-500 hover:text-white w-24 relative group">
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#f97316] rounded-full blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
+                
+                <svg class="w-8 h-8 mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <span class="nav-text text-[10px] font-black uppercase tracking-widest text-center">Conteúdos</span>
+                <div class="nav-dot w-1.5 h-1.5 rounded-full mt-2"></div>
+            </button>
+
+            <button onclick="mudarAba('ferramentas')" class="nav-item flex flex-col items-center justify-center text-gray-500 hover:text-white w-24 relative group">
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#f97316] rounded-full blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
+                
+                <svg class="w-8 h-8 mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <span class="nav-text text-[10px] font-black uppercase tracking-widest">Utilitários</span>
+                <div class="nav-dot w-1.5 h-1.5 rounded-full mt-2"></div>
+            </button>
+
+            <button onclick="mudarAba('configs')" class="nav-item flex flex-col items-center justify-center text-gray-500 hover:text-white w-24 relative group">
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#f97316] rounded-full blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
+                
+                <svg class="w-8 h-8 mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <span class="nav-text text-[10px] font-black uppercase tracking-widest">Configurar</span>
+                <div class="nav-dot w-1.5 h-1.5 rounded-full mt-2"></div>
+            </button>
+            
+        </nav>
     </div>
 
     <script>
+
+        // --- FUNÇÃO DO YOUTUBE DOWNLOADER ---
+        async function baixarYouTube() {
+            const inputLink = document.getElementById('input-youtube');
+            const btn = document.getElementById('btn-youtube');
+            const link = inputLink.value;
+
+            if (!link) {
+                alert("Cole um link do YouTube primeiro!");
+                return;
+            }
+
+            // Efeito visual de carregamento
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Baixando e Processando...`;
+            btn.disabled = true;
+
+            try {
+                const resposta = await fetch('http://127.0.0.1:8000/api/download-youtube', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url: link })
+                });
+
+                const resultado = await resposta.json();
+
+                if (resposta.ok) {
+                    alert(`SUCESSO! Vídeo baixado (${resultado.tamanho_mb}MB). Confira a pasta uploads/videos!`);
+                    inputLink.value = ''; // Limpa o campo
+                } else {
+                    throw new Error(resultado.detail);
+                }
+            } catch (erro) {
+                alert("Erro: " + erro.message);
+            } finally {
+                // Restaura o botão
+                btn.innerHTML = textoOriginal;
+                btn.disabled = false;
+            }
+        }
+
+        function mudarAba(idAba) {
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.view-section').forEach(aba => {
+                aba.classList.remove('active');
+            });
+            
+            event.currentTarget.classList.add('active');
+            
+            setTimeout(() => {
+                document.getElementById('aba-' + idAba).classList.add('active');
+            }, 50);
+        }
+
         const areaSoltar = document.getElementById('area-soltar');
         const entradaArquivo = document.getElementById('entrada-arquivo');
         const nomeArquivoTexto = document.getElementById('nome-arquivo');
@@ -122,12 +341,10 @@
         const porcentagemTexto = document.getElementById('porcentagem-envio');
         const mensagemTexto = document.getElementById('mensagem-envio');
 
-        // Campos do Bento Grid
         const metaRes = document.getElementById('meta-res');
         const metaFps = document.getElementById('meta-fps');
         const metaDuracao = document.getElementById('meta-duracao');
 
-        // Eventos de Drag & Drop
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
             areaSoltar.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); });
         });
@@ -153,14 +370,13 @@
             }
 
             nomeArquivoTexto.textContent = arquivo.name;
-            mensagemTexto.textContent = 'Transferindo para o motor de IA...';
+            mensagemTexto.textContent = 'Transferindo para o motor FFmpeg...';
             mensagemTexto.classList.replace('text-green-500', 'text-gray-500');
 
             const dados = new FormData();
             dados.append('arquivo', arquivo);
 
             try {
-                // Simulação visual de início
                 barraProgresso.style.width = '15%';
                 porcentagemTexto.textContent = '15%';
 
@@ -177,18 +393,17 @@
                     
                     const infos = resultado.detalhes_tecnicos;
                     
-                    // Preenche o Bento Grid com os dados reais do seu Back-end
                     metaRes.textContent = infos.resolucao || 'N/A';
                     metaFps.textContent = `${infos.fps} FPS` || 'N/A';
                     metaDuracao.textContent = `${infos.duracao_segundos}s` || 'N/A';
 
-                    mensagemTexto.innerHTML = `✓ Processamento Concluído (${resultado.tamanho_mb} MB)`;
+                    mensagemTexto.innerHTML = `✓ Sucesso! Áudio extraído e vídeo salvo (${resultado.tamanho_mb} MB)`;
                     mensagemTexto.classList.replace('text-gray-500', 'text-green-500');
                 } else {
                     throw new Error(resultado.detail || 'Falha no servidor');
                 }
             } catch (erro) {
-                mensagemTexto.textContent = "Erro: " + erro.message;
+                mensagemTexto.textContent = "Erro: O servidor Python não está rodando. " + erro.message;
                 mensagemTexto.classList.replace('text-gray-500', 'text-red-500');
                 barraProgresso.classList.replace('bg-[#f97316]', 'bg-red-500');
             }
