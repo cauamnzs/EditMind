@@ -72,3 +72,7 @@ Desenvolvido com foco na usabilidade de editores profissionais:
 
     Inicie o Front-end:
     Abra o arquivo frontend/index.html no seu navegador ou utilize a extensão Live Server.
+
+
+    solução frontend: https://edit-mind.vercel.app/
+    
