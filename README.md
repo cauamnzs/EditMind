@@ -67,4 +67,17 @@ Desenvolvido com foco na usabilidade de editores profissionais:
 
    **Inicie o Servidor Backend:**
     
-  * uvicorn main:app --reload
+    pip install -r requirements.txt
+
+4.  Inicie o Servidor:
+  
+    uvicorn main:app --reload
+
+    O servidor estará rodando em http://127.0.0.1:8000
+
+    Inicie o Front-end:
+    Abra o arquivo frontend/index.html no seu navegador ou utilize a extensão Live Server.
+
+
+    solução frontend: https://edit-mind.vercel.app/
+    
