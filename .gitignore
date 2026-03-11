@@ -8,3 +8,6 @@ backend/uploads/
 # Arquivos de sistema do Windows/Mac
 .DS_Store
 Thumbs.db
+
+backend/.env
+.env
