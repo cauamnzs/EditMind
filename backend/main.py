@@ -8,6 +8,10 @@ import subprocess
 import json
 import yt_dlp
 
+# IMPORTANDO OS CÉREBROS DA IA (Nossas novas pastas)
+from services import whisper_service
+from services import llm_service
+
 app = FastAPI(title="EditMind API")
 
 # PILAR 1: Permissão de CORS
@@ -81,7 +85,7 @@ def extrair_audio_para_ia(caminho_video, nome_arquivo_base):
 # ROTAS DA API
 # ==========================================
 
-# ROTA 1: Upload Manual (O que já funcionava)
+# ROTA 1: Upload Manual
 @app.post("/api/upload")
 async def receber_video_upload(arquivo: UploadFile = File(...)):
     if not arquivo.content_type.startswith("video/"):
@@ -104,14 +108,27 @@ async def receber_video_upload(arquivo: UploadFile = File(...)):
     metadados = extrair_metadados_video(caminho_final_video)
     nome_audio_gerado = extrair_audio_para_ia(caminho_final_video, id_unico)
 
+    # ---------------------------------------------------------
+    # 🔥 O MOTOR DA INTELIGÊNCIA ARTIFICIAL ENTRA AQUI 🔥
+    # ---------------------------------------------------------
+    caminho_do_audio = os.path.join(DIRETORIO_AUDIOS, nome_audio_gerado)
+    
+    # 1. Ouvir
+    texto_transcrito = whisper_service.transcrever_audio(caminho_do_audio)
+    # 2. Pensar
+    corte_sugerido = llm_service.sugerir_cortes(texto_transcrito)
+    # ---------------------------------------------------------
+
+    # Devolvemos o Contrato JSON atualizado com as chaves da IA
     return {
-        "status": "sucesso",
-        "mensagem": "Vídeo processado e áudio extraído com sucesso!",
-        "nome_original": arquivo.filename,
+        "sucesso": True, # Mudamos de 'status' para 'sucesso' para bater com o contrato
+        "mensagem": "Vídeo processado e IA aplicada com sucesso!",
         "video_salvo": nome_seguro_video,
-        "audio_salvo": nome_audio_gerado,
         "tamanho_mb": tamanho_em_megabytes,
-        "detalhes_tecnicos": metadados
+        "detalhes_tecnicos": metadados,
+        # As chaves que o Front-end vai usar na Sexta-feira:
+        "transcricao": texto_transcrito,
+        "corte_sugerido": corte_sugerido
     }
 
 # --- NOVA ROTA: YOUTUBE DOWNLOADER ---
@@ -127,7 +144,6 @@ async def baixar_video_youtube(dados: DadosYoutube):
     nome_seguro_video = f"yt_{id_unico}.mp4"
     caminho_final_video = os.path.join(DIRETORIO_VIDEOS, nome_seguro_video)
     
-    # Configurações do yt-dlp para pegar a melhor qualidade e juntar em MP4
     opcoes_download = {
         'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
         'outtmpl': caminho_final_video,
@@ -136,23 +152,26 @@ async def baixar_video_youtube(dados: DadosYoutube):
     }
 
     try:
-        # Baixa o vídeo
         with yt_dlp.YoutubeDL(opcoes_download) as ydl:
             ydl.extract_info(dados.url, download=True)
             
-        # O vídeo já está no PC. Agora passamos pelo mesmo Raio-X de sempre!
         tamanho_em_megabytes = round(os.path.getsize(caminho_final_video) / (1024 * 1024), 2)
         metadados = extrair_metadados_video(caminho_final_video)
         nome_audio_gerado = extrair_audio_para_ia(caminho_final_video, f"yt_{id_unico}")
 
+        # 🔥 A IA TAMBÉM RODA NOS VÍDEOS DO YOUTUBE 🔥
+        caminho_do_audio = os.path.join(DIRETORIO_AUDIOS, nome_audio_gerado)
+        texto_transcrito = whisper_service.transcrever_audio(caminho_do_audio)
+        corte_sugerido = llm_service.sugerir_cortes(texto_transcrito)
+
         return {
-            "status": "sucesso",
-            "mensagem": "Download concluído, vídeo processado e áudio extraído!",
-            "nome_original": "Video do YouTube",
+            "sucesso": True,
+            "mensagem": "Download do YouTube processado com IA!",
             "video_salvo": nome_seguro_video,
-            "audio_salvo": nome_audio_gerado,
             "tamanho_mb": tamanho_em_megabytes,
-            "detalhes_tecnicos": metadados
+            "detalhes_tecnicos": metadados,
+            "transcricao": texto_transcrito,
+            "corte_sugerido": corte_sugerido
         }
         
     except Exception as e:
