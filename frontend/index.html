@@ -26,12 +26,10 @@
                 <p class="text-gray-500 text-sm mt-2">Alimente a IA com seu arquivo bruto.</p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            <div id="painel-upload" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch transition-all duration-500">
                 <div class="lg:col-span-7">
                     <div id="area-soltar" class="glass-panel rounded-[3rem] p-12 h-full min-h-[420px] border border-gray-800 flex flex-col items-center justify-center group cursor-pointer hover:border-[#f97316] transition-all duration-500 orange-glow relative overflow-hidden">
-                        
                         <div class="absolute inset-0 bg-gradient-to-b from-[#f97316]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-
                         <div class="relative w-28 h-28 mb-8 z-10">
                             <div class="absolute inset-0 bg-[#f97316] rounded-full blur-[40px] opacity-10 group-hover:opacity-40 transition-opacity duration-500"></div>
                             <svg class="relative w-full h-full text-gray-500 group-hover:text-[#f97316] transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
@@ -89,6 +87,57 @@
                     </div>
                 </div>
             </div>
+
+            <div id="painel-ia" class="hidden grid-cols-1 lg:grid-cols-12 gap-8 items-stretch opacity-0 transition-opacity duration-700">
+                
+                <div class="lg:col-span-7 glass-panel rounded-[3rem] p-10 flex flex-col border border-gray-800 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gray-500 to-transparent opacity-50"></div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        <span class="text-[10px] font-black tracking-[0.2em] text-gray-400 uppercase">Whisper Engine • Transcrição Bruta</span>
+                    </div>
+                    <div class="flex-1 bg-black/40 rounded-[2rem] p-6 border border-white/5 shadow-inner">
+                        <p id="texto-transcricao" class="font-mono text-sm text-gray-300 leading-relaxed h-full max-h-[300px] overflow-y-auto pr-4">
+                            Aguardando sinal do servidor...
+                        </p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 glass-panel rounded-[3rem] p-10 flex flex-col justify-between border border-[#f97316]/30 orange-glow relative overflow-hidden">
+                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-[#f97316] rounded-full blur-[80px] opacity-20 pointer-events-none"></div>
+                    
+                    <div>
+                        <div class="flex items-center gap-3 mb-8">
+                            <svg class="w-6 h-6 text-[#f97316]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <span class="text-[10px] font-black tracking-[0.2em] text-[#f97316] uppercase">Corte Viral Encontrado</span>
+                        </div>
+
+                        <div class="flex items-end gap-4 mb-4">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Início</span>
+                                <span id="corte-inicio" class="text-4xl font-black text-white tracking-tighter">00:00</span>
+                            </div>
+                            <div class="text-gray-600 font-black text-xl mb-1">—</div>
+                            <div class="flex flex-col">
+                                <span class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Fim</span>
+                                <span id="corte-fim" class="text-4xl font-black text-[#f97316] tracking-tighter">00:00</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#f97316]/10 border border-[#f97316]/20 rounded-2xl p-5 mt-6">
+                            <span class="text-[9px] font-black text-[#f97316] uppercase tracking-widest block mb-2">Motivo do Algoritmo</span>
+                            <p id="corte-motivo" class="text-xs text-gray-300 italic leading-relaxed">...</p>
+                        </div>
+                    </div>
+
+                    <button onclick="resetarNovoCorte()" class="mt-8 w-full bg-white/5 hover:bg-[#f97316] border border-gray-700 hover:border-[#f97316] text-gray-300 hover:text-white font-bold py-4 rounded-full text-xs transition-all uppercase tracking-widest flex items-center justify-center gap-2 group">
+                        <svg class="w-4 h-4 group-hover:-rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Analisar Outro Vídeo
+                    </button>
+                </div>
+
+            </div>
+
         </div>
 
         <div id="aba-conteudos" class="view-section w-full">
@@ -158,10 +207,8 @@
 
     <div class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50">
         <nav class="glass-panel rounded-[2rem] px-12 py-5 flex items-center gap-14 shadow-[0_30px_60px_rgba(0,0,0,0.7)] border border-gray-700/50">
-            
             <button onclick="mudarAba('inicio')" class="nav-item active flex flex-col items-center justify-center text-gray-500 hover:text-white w-20 relative group">
                 <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#f97316] rounded-full blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
-                
                 <svg class="w-8 h-8 mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                 <span class="nav-text text-[10px] font-black uppercase tracking-widest">Início</span>
                 <div class="nav-dot w-1.5 h-1.5 rounded-full mt-2"></div>
@@ -169,7 +216,6 @@
 
             <button onclick="mudarAba('conteudos')" class="nav-item flex flex-col items-center justify-center text-gray-500 hover:text-white w-24 relative group">
                 <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#f97316] rounded-full blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
-                
                 <svg class="w-8 h-8 mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 <span class="nav-text text-[10px] font-black uppercase tracking-widest text-center">Conteúdos</span>
                 <div class="nav-dot w-1.5 h-1.5 rounded-full mt-2"></div>
@@ -177,7 +223,6 @@
 
             <button onclick="mudarAba('ferramentas')" class="nav-item flex flex-col items-center justify-center text-gray-500 hover:text-white w-24 relative group">
                 <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#f97316] rounded-full blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
-                
                 <svg class="w-8 h-8 mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 <span class="nav-text text-[10px] font-black uppercase tracking-widest">Utilitários</span>
                 <div class="nav-dot w-1.5 h-1.5 rounded-full mt-2"></div>
@@ -185,7 +230,6 @@
 
             <button onclick="mudarAba('configs')" class="nav-item flex flex-col items-center justify-center text-gray-500 hover:text-white w-24 relative group">
                 <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#f97316] rounded-full blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
-                
                 <svg class="w-8 h-8 mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                 <span class="nav-text text-[10px] font-black uppercase tracking-widest">Configurar</span>
                 <div class="nav-dot w-1.5 h-1.5 rounded-full mt-2"></div>
