@@ -4,5 +4,5 @@ python-multipart
 yt-dlp
 pydantic
 openai-whisper
-google-generativeai
+google-genai
 python-dotenv
