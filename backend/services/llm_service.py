@@ -38,7 +38,7 @@ def sugerir_cortes(texto_transcricao: str) -> dict:
 
     try:
         # Usamos o modelo flash que é super rápido e de graça
-        modelo = genai.GenerativeModel('gemini-1.5-flash')
+        modelo = genai.GenerativeModel('gemini-pro')
         resposta = modelo.generate_content(prompt)
         
         # Limpa a resposta da IA caso ela mande aquelas crases de código (```json)
