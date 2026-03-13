@@ -1,11 +1,11 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException, BackgroundTasks # <-- 1. Adicionado o BackgroundTasks aqui
+from fastapi import APIRouter, File, UploadFile, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from fastapi.responses import FileResponse
 import shutil
 import os
 import uuid
 
-# Importando TODOS os nossos serviços (A Cozinha)
+# Importando os serviços
 from services import ffmpeg_service
 from services import youtube_service
 from services import whisper_service
@@ -16,6 +16,7 @@ router = APIRouter()
 DIRETORIO_VIDEOS = "uploads/videos"
 DIRETORIO_AUDIOS = "uploads/audios"
 
+# --- ROTA 1: UPLOAD LOCAL (Mantém a IA ligada) ---
 @router.post("/api/upload")
 async def receber_video_upload(arquivo: UploadFile = File(...)):
     if not arquivo.content_type.startswith("video/"):
@@ -34,58 +35,48 @@ async def receber_video_upload(arquivo: UploadFile = File(...)):
     finally:
         arquivo.file.close()
 
-    # Delegando as tarefas para os Services
-    tamanho_mb = round(os.path.getsize(caminho_final_video) / (1024 * 1024), 2)
+    # Aqui a IA continua trabalhando porque é a análise principal
     metadados = ffmpeg_service.extrair_metadados_video(caminho_final_video)
     nome_audio = ffmpeg_service.extrair_audio_para_ia(caminho_final_video, id_unico)
-
-    # Motor da IA
+    
     caminho_audio = os.path.join(DIRETORIO_AUDIOS, nome_audio)
     texto_transcrito = whisper_service.transcrever_audio(caminho_audio)
     corte_sugerido = llm_service.sugerir_cortes(texto_transcrito)
 
     return {
         "sucesso": True,
-        "video_salvo": nome_seguro_video,
-        "tamanho_mb": tamanho_mb,
         "detalhes_tecnicos": metadados,
         "transcricao": texto_transcrito,
         "corte_sugerido": corte_sugerido
     }
 
+# --- ROTA 2: YT DOWNLOADER (Foco em Velocidade - Sem IA) ---
 class DadosYoutube(BaseModel):
     url: str
 
-# 2. Adicionado o background_tasks na assinatura da função
 @router.post("/api/download-youtube")
 async def baixar_video_youtube(dados: DadosYoutube, background_tasks: BackgroundTasks): 
-    if not "youtube.com" in dados.url and not "youtu.be" in dados.url:
-         raise HTTPException(status_code=400, detail="Link inválido.")
+    # Validação básica de link
+    if not any(x in dados.url for x in ["youtube.com", "youtu.be"]):
+         raise HTTPException(status_code=400, detail="Link do YouTube inválido.")
 
     id_unico = str(uuid.uuid4())
     nome_seguro_video = f"yt_{id_unico}.mp4"
     caminho_final_video = os.path.join(DIRETORIO_VIDEOS, nome_seguro_video)
 
     try:
-        # Chama o serviço do YouTube
+        # 1. Executa apenas o download (rápido)
         youtube_service.baixar_video(dados.url, caminho_final_video)
 
-        tamanho_mb = round(os.path.getsize(caminho_final_video) / (1024 * 1024), 2)
-        metadados = ffmpeg_service.extrair_metadados_video(caminho_final_video)
-        nome_audio = ffmpeg_service.extrair_audio_para_ia(caminho_final_video, f"yt_{id_unico}")
+        # 2. Verifica se o arquivo realmente existe antes de enviar
+        if not os.path.exists(caminho_final_video):
+            raise HTTPException(status_code=500, detail="Erro ao processar arquivo no servidor.")
 
-        # Motor da IA
-        caminho_audio = os.path.join(DIRETORIO_AUDIOS, nome_audio)
-        texto_transcrito = whisper_service.transcrever_audio(caminho_audio)
-        corte_sugerido = llm_service.sugerir_cortes(texto_transcrito)
-
-        # --- O PULO DO GATO: LIXEIRO AUTOMÁTICO ---
-        # Assim que o arquivo terminar de viajar pelo Ngrok até a casa do Matheus,
-        # o FastAPI apaga os arquivos do seu computador automaticamente!
+        # 3. AGENDA A LIMPEZA (Lixeiro automático)
+        # O FastAPI vai enviar o arquivo e DEPOIS deletar do seu HD
         background_tasks.add_task(os.remove, caminho_final_video)
-        background_tasks.add_task(os.remove, caminho_audio)
 
-        # Retorna o arquivo de vídeo usando FileResponse
+        # 4. DEVOLVE O ARQUIVO IMEDIATAMENTE (Sem Whisper, sem delay)
         return FileResponse(
             path=caminho_final_video,
             media_type="video/mp4",
@@ -93,4 +84,8 @@ async def baixar_video_youtube(dados: DadosYoutube, background_tasks: Background
         )
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Se der erro, tenta limpar o rastro se o arquivo foi criado
+        if os.path.exists(caminho_final_video):
+            os.remove(caminho_final_video)
+        print(f"Erro Fatal no Downloader: {str(e)}")
+        raise HTTPException(status_code=500, detail="Não foi possível baixar este vídeo. Tente outro link.")
