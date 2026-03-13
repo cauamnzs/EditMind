@@ -1,34 +1,43 @@
 import requests
 import json
+import re
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+NGROK_URL = os.getenv("API_BASE_URL")
 
 # --- CONFIGURAÇÃO ---
-OPENROUTER_API_KEY = "OPENROUTER_API_KEY=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" 
-MODELO_IA = "google/gemini-flash-1.5-exp:free" 
+MODELO_IA = "openrouter/free"
 
 def sugerir_cortes(transcricao):
     """
-    Analisa a transcrição e gera ganchos baseados no DNA do conteúdo, 
-    focando 100% em retenção para Shorts/TikTok.
+    Analisa a transcrição e gera o melhor gancho.
+    Agora com extrator blindado contra textos chatos da IA.
     """
+    print("🧠 [Brain Engine] Enviando transcrição para o OpenRouter (Gemini Flash)...")
+
+    # Proteção: Se o vídeo for mudo
+    if not transcricao or len(transcricao.strip()) < 50:
+        return {
+            "inicio": "00:00", "fim": "00:00", 
+            "gancho": "Áudio Insuficiente",
+            "motivo": "O vídeo não possui falas suficientes para análise."
+        }
     
     prompt_sistema = """
-    Você é o Diretor de Estratégia do EditMind. Sua função é transformar vídeos longos em 'bombas de retenção' curtas.
+    Você é o Diretor de Estratégia do EditMind. 
+    Transforme vídeos longos em cortes virais.
     
-    ESQUEÇA NICHOS GENÉRICOS. Foque no seguinte:
-    1. CONTEXTO DO CONTEÚDO: Identifique quem está falando e qual a 'dor' ou 'desejo' do público desse vídeo.
-    2. HOOK ENGINEERING: O gancho (hook) deve ser moldado para o público específico (Ex: Se for Maromba, use ganchos de disciplina/resultado. Se for Churrasco, use ganchos de técnica/sabor).
-    3. ESTRUTURA DE CORTE: O início deve ser uma quebra de padrão e o fim deve ser um 'cliffhanger' (gancho para o próximo).
-
-    FORMATO DE RESPOSTA (JSON PURO):
-    [
-      {
-        "gancho_viral": "A frase de impacto para os primeiros 3 segundos",
+    REGRA DE OURO: Retorne APENAS um objeto JSON válido. Use EXATAMENTE estas chaves, sem markdown:
+    {
         "inicio": "MM:SS",
         "fim": "MM:SS",
-        "por_que_viraliza": "Explicação técnica da psicologia de retenção usada",
-        "estilo_edicao": "Dica de efeitos/legendas (Ex: Legendas grandes, zoom rápido no rosto, música de tensão)"
-      }
-    ]
+        "gancho": "A frase de impacto para os primeiros 3 segundos",
+        "motivo": "Explicação técnica da retenção"
+    }
     """
 
     try:
@@ -37,25 +46,51 @@ def sugerir_cortes(transcricao):
             headers={
                 "Authorization": f"Bearer {OPENROUTER_API_KEY}",
                 "Content-Type": "application/json",
+                # Aqui está o link do Ngrok puxado do .env com sucesso!
+                "HTTP-Referer": NGROK_URL, 
+                "X-Title": "EditMind Local"
             },
             data=json.dumps({
                 "model": MODELO_IA,
                 "messages": [
                     {"role": "system", "content": prompt_sistema},
-                    {"role": "user", "content": f"Transcrição para análise de DNA viral: {transcricao}"}
-                ],
-                "response_format": { "type": "json_object" }
+                    {"role": "user", "content": f"Transcrição:\n{transcricao}"}
+                ]
             })
         )
 
         if response.status_code == 200:
             resultado = response.json()
-            conteudo = resultado['choices'][0]['message']['content']
-            return json.loads(conteudo)
+            conteudo_texto = resultado['choices'][0]['message']['content']
+            
+            # EXTRATOR BLINDADO: Pega só o que está entre { e }
+            match = re.search(r'\{.*\}', conteudo_texto, re.DOTALL)
+            
+            if match:
+                texto_limpo = match.group(0)
+                corte_final = json.loads(texto_limpo)
+                print(f"✅ [Brain Engine] Sucesso! Corte: {corte_final.get('inicio', '00:00')} - {corte_final.get('fim', '00:00')}")
+                return corte_final
+            else:
+                print("❌ [Erro LLM]: A IA não enviou um JSON. Resposta bruta:")
+                print(conteudo_texto)
+                return {
+                    "inicio": "00:00", "fim": "00:00", 
+                    "gancho": "Erro de Formato",
+                    "motivo": "A IA não respeitou a estrutura JSON."
+                }
         else:
-            print(f"Erro: {response.text}")
-            return []
+            print(f"❌ [Erro OpenRouter]: {response.status_code} - {response.text}")
+            return {
+                "inicio": "00:00", "fim": "00:00", 
+                "gancho": "Erro na API",
+                "motivo": f"Código: {response.status_code}"
+            }
 
     except Exception as e:
-        print(f"Erro no serviço de LLM: {str(e)}")
-        return []
+        print(f"❌ [Erro Crítico LLM]: {str(e)}")
+        return {
+            "inicio": "00:00", "fim": "00:00", 
+            "gancho": "Falha de Conexão",
+            "motivo": str(e)
+        }

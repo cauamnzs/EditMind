@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
+from database import engine, Base
+Base.metadata.create_all(bind=engine) 
 
 # Importando as Rotas (AGORA COM TODAS AS PEÇAS DO EXODIA)
 from routes import upload_routes, ai_routes

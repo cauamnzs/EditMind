@@ -5,6 +5,9 @@ import shutil
 import os
 import uuid
 
+# ---> IMPORTANDO O BANCO DE DADOS AQUI <---
+from database import SessionLocal, VideoProcessado
+
 # Importando os serviços
 from services import ffmpeg_service
 from services import youtube_service
@@ -16,7 +19,7 @@ router = APIRouter()
 DIRETORIO_VIDEOS = "uploads/videos"
 DIRETORIO_AUDIOS = "uploads/audios"
 
-# --- ROTA 1: UPLOAD LOCAL (Mantém a IA ligada) ---
+# --- ROTA 1: UPLOAD LOCAL (Mantém a IA ligada e Salva no Banco) ---
 @router.post("/api/upload")
 async def receber_video_upload(arquivo: UploadFile = File(...)):
     if not arquivo.content_type.startswith("video/"):
@@ -43,6 +46,24 @@ async def receber_video_upload(arquivo: UploadFile = File(...)):
     texto_transcrito = whisper_service.transcrever_audio(caminho_audio)
     corte_sugerido = llm_service.sugerir_cortes(texto_transcrito)
 
+    # ==========================================
+    # SALVANDO NO BANCO DE DADOS INVISIVELMENTE
+    # ==========================================
+    db = SessionLocal()
+    try:
+        novo_projeto = VideoProcessado(
+            id=id_unico,
+            nome_original=arquivo.filename,
+            caminho_video=caminho_final_video,
+            caminho_audio=caminho_audio,
+            transcricao=texto_transcrito
+        )
+        db.add(novo_projeto)
+        db.commit()
+    finally:
+        db.close() # Sempre fecha a conexão para liberar a memória
+
+    # O retorno continua intacto pra não quebrar o seu Front-end
     return {
         "sucesso": True,
         "detalhes_tecnicos": metadados,
@@ -50,7 +71,7 @@ async def receber_video_upload(arquivo: UploadFile = File(...)):
         "corte_sugerido": corte_sugerido
     }
 
-# --- ROTA 2: YT DOWNLOADER (Foco em Velocidade - Sem IA) ---
+# --- ROTA 2: YT DOWNLOADER (Foco em Velocidade - Sem IA e Sem Banco) ---
 class DadosYoutube(BaseModel):
     url: str
 
@@ -89,3 +110,31 @@ async def baixar_video_youtube(dados: DadosYoutube, background_tasks: Background
             os.remove(caminho_final_video)
         print(f"Erro Fatal no Downloader: {str(e)}")
         raise HTTPException(status_code=500, detail="Não foi possível baixar este vídeo. Tente outro link.")
+    
+@router.get("/api/projetos")
+async def listar_projetos():
+    """
+    Rota para a apresentação: 
+    Puxa tudo do banco e mostra de um jeito fácil.
+    """
+    db = SessionLocal()
+    try:
+        # Busca todos os vídeos processados
+        projetos = db.query(VideoProcessado).all()
+        
+        # Formata para o JSON ficar limpo
+        resultado = []
+        for p in projetos:
+            resultado.append({
+                "id": p.id,
+                "video_nome": p.nome_original,
+                "transcricao_curta": p.transcricao[:100] + "..." if p.transcricao else "",
+                "status": "Finalizado ✅"
+            })
+            
+        return {
+            "total": len(resultado),
+            "projetos": resultado
+        }
+    finally:
+        db.close()
