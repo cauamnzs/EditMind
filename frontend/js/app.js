@@ -1,7 +1,7 @@
 // ==========================================
 // CONFIGURAÇÃO DO SERVIDOR (Atrito Zero)
 // ==========================================
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = 'https://shelley-filar-alona.ngrok-free.dev';
 
 // --- ELEMENTOS DA TELA DE UPLOAD ---
 const painelUpload = document.getElementById('painel-upload');
@@ -66,6 +66,10 @@ async function processarArquivos(arquivos) {
     try {
         const resposta = await fetch(`${API_BASE_URL}/api/upload`, {
             method: 'POST',
+            headers: {
+                // ESSA LINHA É O PULO DO GATO PARA O NGROK NÃO BLOQUEAR
+                'ngrok-skip-browser-warning': 'true'
+            },
             body: dados
         });
 
@@ -157,7 +161,11 @@ async function baixarYouTube() {
     try {
         const resposta = await fetch(`${API_BASE_URL}/api/download-youtube`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                // ADICIONADO AQUI TAMBÉM PARA SEGURANÇA
+                'ngrok-skip-browser-warning': 'true'
+            },
             body: JSON.stringify({ url: link })
         });
         const res = await resposta.json();
