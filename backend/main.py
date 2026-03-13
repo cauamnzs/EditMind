@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 
 # Importando as Rotas (AGORA COM TODAS AS PEÇAS DO EXODIA)
-from routes import upload_routes, ai_routes, video_routes
+from routes import upload_routes, ai_routes
 
 app = FastAPI(title="EditMind API")
 
@@ -24,7 +24,7 @@ os.makedirs("uploads/cortes", exist_ok=True) # <-- Adicionado para não quebrar 
 # Plugando as Rotas no Servidor
 app.include_router(upload_routes.router)
 app.include_router(ai_routes.router)     # <-- Plugando o cérebro
-app.include_router(video_routes.router)  # <-- Plugando o braço executor (FFmpeg)
+
 
 @app.get("/")
 def root():
