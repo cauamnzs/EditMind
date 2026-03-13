@@ -156,25 +156,44 @@ async function baixarYouTube() {
     if (!link) return;
 
     btn.disabled = true;
-    btn.innerHTML = `Processando...`;
+    btn.innerHTML = `Processando e Baixando...`;
 
     try {
         const resposta = await fetch(`${API_BASE_URL}/api/download-youtube`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                // ADICIONADO AQUI TAMBÉM PARA SEGURANÇA
                 'ngrok-skip-browser-warning': 'true'
             },
             body: JSON.stringify({ url: link })
         });
-        const res = await resposta.json();
+
         if (resposta.ok) {
-            alert("Sucesso! Vídeo capturado.");
+            // A MÁGICA ACONTECE AQUI: Transforma a resposta do seu PC em um arquivo real
+            const blob = await resposta.blob();
+            const urlArquivo = window.URL.createObjectURL(blob);
+            
+            // Cria um botão "fantasma" no HTML e clica nele para baixar
+            const linkDownload = document.createElement('a');
+            linkDownload.style.display = 'none';
+            linkDownload.href = urlArquivo;
+            linkDownload.download = 'Corte_EditMind.mp4'; // Nome padrão do arquivo
+            
+            document.body.appendChild(linkDownload);
+            linkDownload.click();
+            
+            // Limpa a memória do navegador
+            window.URL.revokeObjectURL(urlArquivo);
+            document.body.removeChild(linkDownload);
+            
+            alert("Sucesso! O vídeo está sendo baixado no seu PC.");
             inputLink.value = '';
+        } else {
+            const erro = await resposta.json();
+            alert("Erro no servidor: " + (erro.detail || "Falha desconhecida"));
         }
     } catch (e) {
-        alert("Erro no download.");
+        alert("Erro na conexão: " + e.message);
     } finally {
         btn.disabled = false;
         btn.innerHTML = `Puxar para Nuvem`;

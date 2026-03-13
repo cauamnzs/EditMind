@@ -26,3 +26,4 @@ app.include_router(upload_routes.router)
 @app.get("/")
 def root():
     return {"mensagem": "EditMind rodando 100% com Arquitetura Limpa!"}
+

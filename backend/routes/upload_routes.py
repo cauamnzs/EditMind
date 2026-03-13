@@ -1,5 +1,6 @@
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from pydantic import BaseModel
+from fastapi.responses import FileResponse
 import shutil
 import os
 import uuid
@@ -77,14 +78,12 @@ async def baixar_video_youtube(dados: DadosYoutube):
         texto_transcrito = whisper_service.transcrever_audio(caminho_audio)
         corte_sugerido = llm_service.sugerir_cortes(texto_transcrito)
 
-        return {
-            "sucesso": True,
-            "video_salvo": nome_seguro_video,
-            "tamanho_mb": tamanho_mb,
-            "detalhes_tecnicos": metadados,
-            "transcricao": texto_transcrito,
-            "corte_sugerido": corte_sugerido
-        }
+        # Retorna o arquivo de vídeo usando FileResponse em vez de um dict
+        return FileResponse(
+            path=caminho_final_video,
+            media_type="video/mp4",
+            filename="Corte_EditMind.mp4"
+        )
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

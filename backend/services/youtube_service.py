@@ -9,3 +9,4 @@ def baixar_video(url: str, caminho_final: str):
     }
     with yt_dlp.YoutubeDL(opcoes_download) as ydl:
         ydl.extract_info(url, download=True)
+        
