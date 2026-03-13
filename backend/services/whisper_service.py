@@ -1,28 +1,47 @@
-import whisper
+from faster_whisper import WhisperModel
 import os
 
-def transcrever_audio(caminho_mp3: str) -> str:
+# ==========================================
+# INICIALIZAÇÃO DO MOTOR NA VRAM
+# ==========================================
+# Com a RTX 4060, o float16 é o cenário ideal. 
+# O large-v3 garante que o Llama/Gemini receba um texto perfeito para achar os ganchos.
+print("⚡ [Whisper Engine] Aquecendo os CUDA Cores... Carregando 'large-v3'")
+try:
+    modelo = WhisperModel("large-v3", device="cuda", compute_type="float16")
+    print("✅ [Whisper Engine] Modelo large-v3 carregado com sucesso na RTX!")
+except Exception as e:
+    print(f"⚠️ [Aviso Crítico] Falha ao injetar no CUDA. Caindo pra CPU. Erro: {e}")
+    # Fallback caso dê algum BO de driver
+    modelo = WhisperModel("base", device="cpu", compute_type="int8")
+
+def transcrever_audio(caminho_audio):
     """
-    Recebe o caminho de um arquivo de áudio e devolve o texto transcrito.
+    Fatia o áudio usando VAD e processa tudo direto na GPU.
     """
-    print(f"[WHISPER] Iniciando transcrição do arquivo: {caminho_mp3}")
+    print(f"🚀 [Whisper] Extraindo DNA do áudio: {caminho_audio}...")
     
-    if not os.path.exists(caminho_mp3):
-        raise FileNotFoundError(f"Arquivo não encontrado: {caminho_mp3}")
-
     try:
-        # Carrega o modelo 'base' (rápido e leve, ideal para a apresentação rodar liso no seu PC)
-        # Na primeira execução, ele vai baixar ~500MB de modelo automaticamente.
-        modelo = whisper.load_model("base")
+        # vad_filter=True ignora o silêncio, economizando processamento da placa
+        segmentos, info = modelo.transcribe(
+            caminho_audio, 
+            beam_size=5, 
+            vad_filter=True,
+            vad_parameters=dict(min_silence_duration_ms=500)
+        )
         
-        # Faz a mágica acontecer
-        resultado = modelo.transcribe(caminho_mp3, language="pt") # Forçamos português para ser mais rápido
+        print(f"🎙️ [Whisper] Idioma mapeado: '{info.language}' ({info.language_probability * 100:.1f}% precisão)")
         
-        texto_final = resultado["text"].strip()
-        print("[WHISPER] Transcrição concluída com sucesso!")
+        texto_completo = ""
         
-        return texto_final
+        # Faz o streaming no console pra você ver a placa de vídeo voando
+        for segmento in segmentos:
+            texto_limpo = segmento.text.strip()
+            # print(f"[{segmento.start:.2f}s -> {segmento.end:.2f}s] {texto_limpo}") # Descomente se quiser ver linha por linha
+            texto_completo += texto_limpo + " "
+            
+        return texto_completo.strip()
 
-    except Exception as e:
-        print(f"[WHISPER] Erro na transcrição: {e}")
-        return f"Erro ao transcrever: {e}"
+    except Exception as erro:
+        print(f"❌ [ERRO F-WHISPER]: {str(erro)}")
+        return "Erro ao transcrever o áudio."
