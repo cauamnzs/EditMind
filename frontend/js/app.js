@@ -42,17 +42,16 @@ window.ultimoResultadoIA = null;
 areaSoltar.addEventListener('drop', e => processarArquivos(e.dataTransfer.files));
 entradaArquivo.addEventListener('change', e => processarArquivos(e.target.files));
 
-// --- PROCESSAMENTO DO VÍDEO ---
+// --- PROCESSAMENTO DO VÍDEO (UPLOAD LOCAL) ---
 async function processarArquivos(arquivos) {
     if (arquivos.length === 0) return;
     const arquivo = arquivos[0];
 
     if (!arquivo.type.startsWith('video/')) {
-        alert('O EditMind aceita apenas arquivos de vídeo.');
+        alert('O EditMind aceita apenas arquivos de vídeo (mp4, mov, avi, etc).');
         return;
     }
 
-    // Resetando a interface
     nomeArquivoTexto.textContent = arquivo.name;
     mensagemTexto.textContent = 'Processando motor de IA...';
     mensagemTexto.classList.replace('text-green-500', 'text-gray-500');
@@ -66,74 +65,59 @@ async function processarArquivos(arquivos) {
     try {
         const resposta = await fetch(`${API_BASE_URL}/api/upload`, {
             method: 'POST',
-            headers: {
-                // ESSA LINHA É O PULO DO GATO PARA O NGROK NÃO BLOQUEAR
-                'ngrok-skip-browser-warning': 'true'
-            },
+            headers: { 'ngrok-skip-browser-warning': 'true' },
             body: dados
         });
 
         const resultado = await resposta.json();
 
         if (resposta.ok) {
-            // 1. Preenche os metadados IMEDIATAMENTE pro professor ver
-            const infos = resultado.detalhes_tecnicos;
+            const infos = resultado.detalhes_tecnicos || {};
             metaRes.textContent = infos.resolucao || 'N/A';
-            metaFps.textContent = `${infos.fps} FPS` || 'N/A';
-            metaDuracao.textContent = `${infos.duracao_segundos}s` || 'N/A';
+            metaFps.textContent = infos.fps ? `${infos.fps} FPS` : 'N/A';
+            metaDuracao.textContent = infos.duracao_segundos ? `${infos.duracao_segundos}s` : 'N/A';
 
-            // 2. Finaliza a barra visualmente
             barraProgresso.style.width = '100%';
             porcentagemTexto.textContent = '100%';
             
-            // 3. O PULO DO GATO: Cria o botão de acionamento manual
-            window.ultimoResultadoIA = resultado; // Guarda o JSON
+            window.ultimoResultadoIA = resultado; 
             
             mensagemTexto.innerHTML = `
                 <button onclick="acionarTelaIA()" class="mt-4 bg-[#f97316] hover:bg-white hover:text-[#f97316] text-white font-black py-4 px-10 rounded-full text-[10px] uppercase tracking-[0.2em] shadow-[0_15px_35px_rgba(249,115,22,0.4)] transition-all animate-pulse border-none cursor-pointer scale-110">
                     Ver Relatório da IA ⚡
                 </button>
             `;
-
         } else {
-            throw new Error(resultado.detail || 'Falha no servidor');
+            throw new Error(resultado.detail || 'Falha no processamento.');
         }
     } catch (erro) {
         mensagemTexto.textContent = "Erro na Engine: " + erro.message;
         mensagemTexto.classList.replace('text-gray-500', 'text-red-500');
         barraProgresso.classList.replace('bg-[#f97316]', 'bg-red-500');
+        setTimeout(() => { barraProgresso.style.width = '0%'; }, 2000);
     }
 }
 
-// --- FUNÇÃO QUE O BOTÃO NOVO CHAMA ---
+// --- NAVEGAÇÃO E IA ---
 window.acionarTelaIA = function() {
-    if (window.ultimoResultadoIA) {
-        mostrarResultadosIA(window.ultimoResultadoIA);
-    }
+    if (window.ultimoResultadoIA) mostrarResultadosIA(window.ultimoResultadoIA);
 }
 
-// --- TRANSIÇÃO VISUAL ---
 function mostrarResultadosIA(resultado) {
     painelUpload.classList.add('hidden');
     painelUpload.classList.remove('grid');
-
     painelIa.classList.remove('hidden');
     painelIa.classList.add('grid');
-    
-    setTimeout(() => {
-        painelIa.classList.remove('opacity-0');
-    }, 50);
+    setTimeout(() => { painelIa.classList.remove('opacity-0'); }, 50);
 
-    textoTranscricao.textContent = resultado.transcricao || "Sem transcrição.";
-    
+    textoTranscricao.textContent = resultado.transcricao || "Sem transcrição disponível.";
     if(resultado.corte_sugerido) {
         corteInicio.textContent = resultado.corte_sugerido.inicio || "00:00";
         corteFim.textContent = resultado.corte_sugerido.fim || "00:00";
-        corteMotivo.textContent = `"${resultado.corte_sugerido.motivo}"` || "...";
+        corteMotivo.textContent = `"${resultado.corte_sugerido.motivo}"` || "Sem motivo.";
     }
 }
 
-// --- RESET E NAVEGAÇÃO ---
 window.resetarNovoCorte = function() {
     painelIa.classList.add('opacity-0');
     setTimeout(() => {
@@ -143,20 +127,38 @@ window.resetarNovoCorte = function() {
         porcentagemTexto.textContent = '0%';
         nomeArquivoTexto.textContent = 'Aguardando feed...';
         mensagemTexto.innerHTML = 'Motor Python em Standby.';
+        mensagemTexto.classList.replace('text-red-500', 'text-gray-500');
         metaRes.textContent = '—'; metaFps.textContent = '—'; metaDuracao.textContent = '—';
         painelUpload.classList.remove('hidden');
         painelUpload.classList.add('grid');
+        window.ultimoResultadoIA = null;
     }, 500);
 }
 
+// --- YOUTUBE DOWNLOADER (ESTILIZADO E ANIMADO) ---
 async function baixarYouTube() {
     const inputLink = document.getElementById('input-youtube');
     const btn = document.getElementById('btn-youtube');
-    const link = inputLink.value;
-    if (!link) return;
+    const link = inputLink.value.trim();
 
+    if (!link || (!link.includes('youtube.com') && !link.includes('youtu.be'))) {
+        alert("Insira um link válido do YouTube.");
+        return;
+    }
+
+    // 1. ESTADO DE LOADING (Animação de Processamento)
     btn.disabled = true;
-    btn.innerHTML = `Processando e Baixando...`;
+    const originalClasses = [...btn.classList]; // Guarda as classes originais
+    
+    // Transição suave para cinza enquanto processa
+    btn.classList.remove('bg-[#f97316]', 'hover:bg-white');
+    btn.classList.add('bg-gray-600', 'cursor-not-allowed');
+    btn.innerHTML = `
+        <span class="flex items-center justify-center gap-2">
+            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            PROCESSANDO...
+        </span>
+    `;
 
     try {
         const resposta = await fetch(`${API_BASE_URL}/api/download-youtube`, {
@@ -169,42 +171,50 @@ async function baixarYouTube() {
         });
 
         if (resposta.ok) {
-            // A MÁGICA ACONTECE AQUI: Transforma a resposta do seu PC em um arquivo real
             const blob = await resposta.blob();
             const urlArquivo = window.URL.createObjectURL(blob);
-            
-            // Cria um botão "fantasma" no HTML e clica nele para baixar
             const linkDownload = document.createElement('a');
-            linkDownload.style.display = 'none';
             linkDownload.href = urlArquivo;
-            linkDownload.download = 'Corte_EditMind.mp4'; // Nome padrão do arquivo
-            
+            linkDownload.download = 'Corte_EditMind.mp4';
             document.body.appendChild(linkDownload);
             linkDownload.click();
-            
-            // Limpa a memória do navegador
             window.URL.revokeObjectURL(urlArquivo);
             document.body.removeChild(linkDownload);
-            
-            alert("Sucesso! O vídeo está sendo baixado no seu PC.");
+
+            // 2. ESTADO DE SUCESSO (Verde e Concluído)
+            btn.classList.remove('bg-gray-600');
+            btn.classList.add('bg-green-600');
+            btn.innerHTML = `CONCLUÍDO! ✅`;
             inputLink.value = '';
+
+            // 3. RESET SUAVE (Volta ao laranja original após 3 segundos)
+            setTimeout(() => {
+                btn.classList.remove('bg-green-600', 'cursor-not-allowed');
+                btn.classList.add('bg-[#f97316]', 'hover:bg-white');
+                btn.disabled = false;
+                btn.innerHTML = `PUXAR PARA NUVEM`;
+            }, 3000);
+
         } else {
-            const erro = await resposta.json();
-            alert("Erro no servidor: " + (erro.detail || "Falha desconhecida"));
+            throw new Error("Erro no servidor.");
         }
     } catch (e) {
-        alert("Erro na conexão: " + e.message);
-    } finally {
+        alert(`Erro: ${e.message}`);
+        // Reset imediato em caso de erro para permitir nova tentativa
+        btn.classList.remove('bg-gray-600', 'bg-green-600');
+        btn.classList.add('bg-[#f97316]');
         btn.disabled = false;
-        btn.innerHTML = `Puxar para Nuvem`;
+        btn.innerHTML = `PUXAR PARA NUVEM`;
     }
 }
 
+// --- CONTROLE DE ABAS ---
 window.mudarAba = function(idAba) {
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.view-section').forEach(aba => aba.classList.remove('active'));
     if(window.event && window.event.currentTarget) window.event.currentTarget.classList.add('active');
     setTimeout(() => {
-        document.getElementById('aba-' + idAba).classList.add('active');
+        const abaAlvo = document.getElementById('aba-' + idAba);
+        if(abaAlvo) abaAlvo.classList.add('active');
     }, 50);
 }

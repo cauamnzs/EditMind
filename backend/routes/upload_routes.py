@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException
+from fastapi import APIRouter, File, UploadFile, HTTPException, BackgroundTasks # <-- 1. Adicionado o BackgroundTasks aqui
 from pydantic import BaseModel
 from fastapi.responses import FileResponse
 import shutil
@@ -56,8 +56,9 @@ async def receber_video_upload(arquivo: UploadFile = File(...)):
 class DadosYoutube(BaseModel):
     url: str
 
+# 2. Adicionado o background_tasks na assinatura da função
 @router.post("/api/download-youtube")
-async def baixar_video_youtube(dados: DadosYoutube):
+async def baixar_video_youtube(dados: DadosYoutube, background_tasks: BackgroundTasks): 
     if not "youtube.com" in dados.url and not "youtu.be" in dados.url:
          raise HTTPException(status_code=400, detail="Link inválido.")
 
@@ -78,11 +79,17 @@ async def baixar_video_youtube(dados: DadosYoutube):
         texto_transcrito = whisper_service.transcrever_audio(caminho_audio)
         corte_sugerido = llm_service.sugerir_cortes(texto_transcrito)
 
-        # Retorna o arquivo de vídeo usando FileResponse em vez de um dict
+        # --- O PULO DO GATO: LIXEIRO AUTOMÁTICO ---
+        # Assim que o arquivo terminar de viajar pelo Ngrok até a casa do Matheus,
+        # o FastAPI apaga os arquivos do seu computador automaticamente!
+        background_tasks.add_task(os.remove, caminho_final_video)
+        background_tasks.add_task(os.remove, caminho_audio)
+
+        # Retorna o arquivo de vídeo usando FileResponse
         return FileResponse(
             path=caminho_final_video,
             media_type="video/mp4",
-            filename="Corte_EditMind.mp4"
+            filename="Video_EditMind.mp4"
         )
         
     except Exception as e:
