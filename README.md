@@ -11,12 +11,14 @@ A edição de "Cortes" (clipagem) exige horas de trabalho mecânico: baixar víd
 
 ## ✨ Funcionalidades (Roadmap & Status)
 
-- [x] **Motor de Ingestão de Mídia:** Upload otimizado de arquivos de vídeo pesados.
+- [x] **Motor de Ingestão de Mídia:** Upload otimizado de arquivos de vídeo via Drag & Drop.
 - [x] **YouTube Downloader Integrado:** Extração direta de vídeos e podcasts do YouTube em altíssima qualidade (1080p+) direto para o servidor.
 - [x] **Extração Analítica:** Coleta de metadados em tempo real (Resolução, Framerate, Duração) via FFmpeg.
-- [x] **Separação de Áudio:** Extração automática da trilha sonora (MP3) para processamento de IA.
-- [ ] **Integração Whisper AI:** Transcrição completa com *timestamps* exatos.
-- [ ] **Curadoria Inteligente (Lotes):** IA que sugere os melhores cortes e ganchos de retenção.
+- [x] **Painel de Controle Responsivo:** Layout fluido e adaptável do Mobile ao Desktop (Bento Grid).
+- [x] **Landing Page Institucional:** Página de vendas de alta conversão integrada ao fluxo do app.
+- [x] **Calibração de IA:** Sistema para definição do tempo alvo do corte (30s, 60s ou 120s).
+- [x] **Curadoria Inteligente (Lotes):** IA integrada que analisa, transcreve e já sugere os melhores ganchos e minutos exatos de retenção.
+- [ ] **Renderização do Vídeo Final:** Processamento e reenquadramento automático (9:16) no player com base nas sugestões da IA.
 - [ ] **Edição via Texto:** Deleção de trechos do vídeo apagando frases na transcrição.
 
 ## 🎨 Arquitetura de UI/UX
@@ -50,11 +52,11 @@ Desenvolvido com foco na usabilidade de editores profissionais:
 ### Passo a Passo
 
 1. **Clone o repositório:**
-   
-  * git clone [https://github.com/seu-usuario/EditMind.git](https://github.com/seu-usuario/EditMind.git)
-  * cd EditMind/backend
+```bash
+git clone [https://github.com/seu-usuario/EditMind.git](https://github.com/seu-usuario/EditMind.git)
+cd EditMind/backend
 
-   **Ative o ambiente virtual e instale as dependências:**
+2.   **Ative o ambiente virtual e instale as dependências:**
    
 
  * python -m venv venv
@@ -65,7 +67,7 @@ Desenvolvido com foco na usabilidade de editores profissionais:
 
  * pip install -r requirements.txt
 
-   **Inicie o Servidor Backend:**
+3.   **Inicie o Servidor Backend:**
     
     pip install -r requirements.txt
 
