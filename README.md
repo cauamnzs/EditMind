@@ -69,10 +69,7 @@ cd EditMind/backend
 
 3.   **Inicie o Servidor Backend:**
     
-    pip install -r requirements.txt
-
-4.  Inicie o Servidor:
-  
+    
     uvicorn main:app --reload
 
     O servidor estará rodando em http://127.0.0.1:8000
