@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import os
 from database import engine, Base
 Base.metadata.create_all(bind=engine) 
@@ -8,6 +9,7 @@ Base.metadata.create_all(bind=engine)
 from routes import upload_routes, ai_routes
 
 app = FastAPI(title="EditMind API")
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Permissão de CORS
 app.add_middleware(

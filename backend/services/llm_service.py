@@ -13,31 +13,27 @@ NGROK_URL = os.getenv("API_BASE_URL")
 MODELO_IA = "openrouter/free"
 
 def sugerir_cortes(transcricao):
-    """
-    Analisa a transcrição e gera o melhor gancho.
-    Agora com extrator blindado contra textos chatos da IA.
-    """
-    print("🧠 [Brain Engine] Enviando transcrição para o OpenRouter (Gemini Flash)...")
+    print("🧠 [Brain Engine] Buscando cortes virais padrão OpusClip...")
 
-    # Proteção: Se o vídeo for mudo
     if not transcricao or len(transcricao.strip()) < 50:
-        return {
-            "inicio": "00:00", "fim": "00:00", 
-            "gancho": "Áudio Insuficiente",
-            "motivo": "O vídeo não possui falas suficientes para análise."
-        }
+        return []
     
     prompt_sistema = """
-    Você é o Diretor de Estratégia do EditMind. 
-    Transforme vídeos longos em cortes virais.
+    Você é o Algoritmo Chefe do EditMind, especialista em retenção do TikTok e Reels.
+    Analise a transcrição e extraia os 3 melhores cortes.
     
-    REGRA DE OURO: Retorne APENAS um objeto JSON válido. Use EXATAMENTE estas chaves, sem markdown:
-    {
-        "inicio": "MM:SS",
-        "fim": "MM:SS",
-        "gancho": "A frase de impacto para os primeiros 3 segundos",
-        "motivo": "Explicação técnica da retenção"
-    }
+    REGRA DE OURO: Retorne APENAS um Array JSON válido com 3 objetos. Use EXATAMENTE estas chaves:
+    [
+      {
+          "titulo": "Título Curto (Ex: O Segredo da Picanha)",
+          "viral_score": 98, 
+          "inicio": "00:10",
+          "fim": "00:55",
+          "gancho": "A frase exata que fisga nos primeiros 3 segundos",
+          "motivo": "Explicação do gatilho psicológico (Pathos, Logos, etc)"
+      }
+    ]
+    O viral_score deve ser um número de 70 a 99 baseando-se no potencial de viralização.
     """
 
     try:
@@ -46,7 +42,6 @@ def sugerir_cortes(transcricao):
             headers={
                 "Authorization": f"Bearer {OPENROUTER_API_KEY}",
                 "Content-Type": "application/json",
-                # Aqui está o link do Ngrok puxado do .env com sucesso!
                 "HTTP-Referer": NGROK_URL, 
                 "X-Title": "EditMind Local"
             },
@@ -56,41 +51,19 @@ def sugerir_cortes(transcricao):
                     {"role": "system", "content": prompt_sistema},
                     {"role": "user", "content": f"Transcrição:\n{transcricao}"}
                 ]
-            })
+            }),
+            timeout=60
         )
 
         if response.status_code == 200:
             resultado = response.json()
             conteudo_texto = resultado['choices'][0]['message']['content']
-            
-            # EXTRATOR BLINDADO: Pega só o que está entre { e }
-            match = re.search(r'\{.*\}', conteudo_texto, re.DOTALL)
+            match = re.search(r'\[.*\]', conteudo_texto, re.DOTALL)
             
             if match:
-                texto_limpo = match.group(0)
-                corte_final = json.loads(texto_limpo)
-                print(f"✅ [Brain Engine] Sucesso! Corte: {corte_final.get('inicio', '00:00')} - {corte_final.get('fim', '00:00')}")
-                return corte_final
-            else:
-                print("❌ [Erro LLM]: A IA não enviou um JSON. Resposta bruta:")
-                print(conteudo_texto)
-                return {
-                    "inicio": "00:00", "fim": "00:00", 
-                    "gancho": "Erro de Formato",
-                    "motivo": "A IA não respeitou a estrutura JSON."
-                }
-        else:
-            print(f"❌ [Erro OpenRouter]: {response.status_code} - {response.text}")
-            return {
-                "inicio": "00:00", "fim": "00:00", 
-                "gancho": "Erro na API",
-                "motivo": f"Código: {response.status_code}"
-            }
-
+                return json.loads(match.group(0))
+            return []
+        return []
     except Exception as e:
-        print(f"❌ [Erro Crítico LLM]: {str(e)}")
-        return {
-            "inicio": "00:00", "fim": "00:00", 
-            "gancho": "Falha de Conexão",
-            "motivo": str(e)
-        }
+        print(f"❌ Erro LLM: {str(e)}")
+        return []

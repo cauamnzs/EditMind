@@ -104,52 +104,89 @@
                 </div>
             </div>
 
-            <div id="painel-ia" class="hidden grid-cols-1 lg:grid-cols-12 gap-8 items-stretch opacity-0 transition-opacity duration-700">
+            <!-- PAINEL IA: GALERIA E EDITOR -->
+            <div id="painel-ia" class="hidden flex-col gap-6 opacity-0 transition-opacity duration-700 w-full">
                 
-                <div class="lg:col-span-7 glass-panel rounded-[3rem] p-10 flex flex-col border border-gray-800 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gray-500 to-transparent opacity-50"></div>
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <span class="text-[10px] font-black tracking-[0.2em] text-gray-400 uppercase">Whisper Engine • Transcrição Bruta</span>
+                <!-- TELA 1: GALERIA DE CORTES -->
+                <div id="tela-galeria" class="flex flex-col w-full transition-all duration-500">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 class="text-3xl font-black text-white tracking-tight">Cortes Encontrados ⚡</h3>
+                            <p class="text-gray-500 text-sm mt-1">Selecione um dos ganchos virais para abrir o estúdio de edição.</p>
+                        </div>
+                        <button onclick="resetarNovoCorte()" class="bg-black/50 border border-gray-800 hover:border-gray-500 text-gray-400 hover:text-white px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">
+                            Descartar Lote
+                        </button>
                     </div>
-                    <div class="flex-1 bg-black/40 rounded-[2rem] p-6 border border-white/5 shadow-inner">
-                        <p id="texto-transcricao" class="font-mono text-sm text-gray-300 leading-relaxed h-full max-h-[300px] overflow-y-auto pr-4">
-                            Aguardando sinal do servidor...
-                        </p>
+
+                    <!-- Os cards vão entrar aqui, em um Grid de 3 colunas -->
+                    <div id="lista-cortes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+                        <!-- Cards injetados via JS -->
                     </div>
                 </div>
 
-                <div class="lg:col-span-5 glass-panel rounded-[3rem] p-10 flex flex-col justify-between border border-[#f97316]/30 orange-glow relative overflow-hidden">
-                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-[#f97316] rounded-full blur-[80px] opacity-20 pointer-events-none"></div>
+                <!-- TELA 2: ESTÚDIO DO SHORT (ESCONDIDA POR PADRÃO) -->
+                <div id="tela-editor" class="hidden flex-col w-full transition-all duration-500 opacity-0 scale-95">
                     
-                    <div>
-                        <div class="flex items-center gap-3 mb-8">
-                            <svg class="w-6 h-6 text-[#f97316]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                            <span class="text-[10px] font-black tracking-[0.2em] text-[#f97316] uppercase">Corte Viral Encontrado</span>
-                        </div>
-
-                        <div class="flex items-end gap-4 mb-4">
-                            <div class="flex flex-col">
-                                <span class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Início</span>
-                                <span id="corte-inicio" class="text-4xl font-black text-white tracking-tighter">00:00</span>
-                            </div>
-                            <div class="text-gray-600 font-black text-xl mb-1">—</div>
-                            <div class="flex flex-col">
-                                <span class="text-[9px] font-bold text-gray-500 uppercase tracking-widest mb-1">Fim</span>
-                                <span id="corte-fim" class="text-4xl font-black text-[#f97316] tracking-tighter">00:00</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-[#f97316]/10 border border-[#f97316]/20 rounded-2xl p-5 mt-6">
-                            <span class="text-[9px] font-black text-[#f97316] uppercase tracking-widest block mb-2">Motivo do Algoritmo</span>
-                            <p id="corte-motivo" class="text-xs text-gray-300 italic leading-relaxed">...</p>
+                    <div class="flex items-center gap-4 mb-8 border-b border-gray-800 pb-6">
+                        <button onclick="fecharEditor()" class="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-800 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <div>
+                            <h3 id="editor-titulo" class="text-2xl font-black text-white tracking-tight">Título do Corte</h3>
+                            <span id="editor-badge" class="bg-[#f97316]/20 text-[#f97316] text-[10px] font-black uppercase px-2 py-0.5 rounded-md border border-[#f97316]/30 mt-1 inline-block">Score: 90</span>
                         </div>
                     </div>
 
-                    <button onclick="resetarNovoCorte()" class="mt-8 w-full bg-white/5 hover:bg-[#f97316] border border-gray-700 hover:border-[#f97316] text-gray-300 hover:text-white font-bold py-4 rounded-full text-xs transition-all uppercase tracking-widest flex items-center justify-center gap-2 group">
-                        <svg class="w-4 h-4 group-hover:-rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        Analisar Outro Vídeo
-                    </button>
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                        
+                        <!-- ESQUERDA: PLAYER VERTICAL (9:16) -->
+                        <div class="lg:col-span-4 flex flex-col items-center">
+                            <div class="relative w-full max-w-[280px] aspect-[9/16] bg-black rounded-[2rem] overflow-hidden border-4 border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] group">
+                                <!-- object-cover faz o vídeo horizontal preencher a tela vertical (corte central) -->
+                                <video id="player-vertical" class="w-full h-full object-cover" controls playsinline>
+                                    <source src="" type="video/mp4">
+                                </video>
+                                <div class="absolute top-4 left-4 right-4 flex justify-between items-center pointer-events-none">
+                                    <span class="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white border border-white/10">PREVIEW</span>
+                                    <span id="editor-tempo" class="bg-red-500/80 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-lg">00:00 - 00:00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DIREITA: TRANSCRIÇÃO E DADOS -->
+                        <div class="lg:col-span-8 flex flex-col h-full">
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div class="bg-black/40 rounded-2xl p-5 border border-white/5">
+                                    <span class="text-[9px] text-gray-500 uppercase font-black tracking-widest block mb-2">🪝 O Gancho (Hook)</span>
+                                    <p id="editor-gancho" class="text-sm font-bold text-white leading-snug">...</p>
+                                </div>
+                                <div class="bg-black/40 rounded-2xl p-5 border border-white/5">
+                                    <span class="text-[9px] text-gray-500 uppercase font-black tracking-widest block mb-2">🧠 Por que viraliza?</span>
+                                    <p id="editor-motivo" class="text-xs text-gray-400 leading-relaxed">...</p>
+                                </div>
+                            </div>
+
+                            <!-- CAIXA DE EDIÇÃO DA TRANSCRIÇÃO -->
+                            <div class="flex-1 flex flex-col glass-panel rounded-3xl p-6 border border-gray-800 min-h-[250px]">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-[10px] text-[#f97316] uppercase font-black tracking-[0.2em] flex items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        Transcrição do Corte (Editável)
+                                    </span>
+                                </div>
+                                <textarea id="editor-texto" class="w-full flex-1 bg-[#0b0d11]/80 border border-gray-800 rounded-2xl p-5 text-gray-300 text-sm focus:border-[#f97316]/50 focus:shadow-[0_0_15px_rgba(249,115,22,0.1)] outline-none resize-none leading-relaxed transition-all" placeholder="A transcrição deste trecho aparecerá aqui..."></textarea>
+                            </div>
+
+                            <div class="mt-6 flex justify-end">
+                                <button class="bg-[#f97316] hover:bg-white hover:text-[#f97316] text-white font-black py-4 px-12 rounded-full text-[10px] uppercase tracking-[0.2em] shadow-[0_15px_30px_rgba(249,115,22,0.3)] transition-all transform hover:scale-105">
+                                    Gerar Vídeo Final
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
             </div>
@@ -209,13 +246,54 @@
             </div>
         </div>
 
+        <!-- ABA CONFIGURAÇÕES (AGORA INTERATIVA) -->
         <div id="aba-configs" class="view-section w-full">
             <div class="mb-10 text-center">
-                <h2 class="text-4xl font-black text-white tracking-tight">Ajustes da Engine</h2>
-                <p class="text-gray-500 text-sm mt-2">Configure o comportamento da Inteligência Artificial.</p>
+                <h2 class="text-4xl font-black text-white tracking-tight">Parâmetros de Extração</h2>
+                <p class="text-gray-500 text-sm mt-2">Calibre o algoritmo da IA para focar no formato ideal da sua audiência.</p>
             </div>
-            <div class="glass-panel rounded-[3rem] p-12 text-center">
-                <p class="text-gray-500 text-sm">Painel de variáveis em desenvolvimento.</p>
+            <div class="max-w-4xl mx-auto glass-panel rounded-[3rem] p-12 border border-gray-800">
+                <h3 class="text-[10px] font-black tracking-[0.2em] text-[#f97316] uppercase mb-8">Duração Alvo do Corte</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="botoes-tempo">
+                    
+                    <!-- OPÇÃO 1: Menos de 30s -->
+                    <button onclick="selecionarTempo(this, '30')" class="btn-tempo bg-black/40 border border-gray-800 rounded-2xl p-6 flex flex-col items-start justify-center transition-all hover:border-gray-600 text-left group">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-2xl text-white font-black">&lt; 30s</span>
+                            <span class="text-[9px] uppercase tracking-widest text-gray-500 font-bold group-hover:text-white transition-colors">Dinâmico</span>
+                        </div>
+                        <span class="text-xs text-gray-400 font-medium leading-relaxed">Alta retenção e loop rápido. Ideal para tráfego frio no TikTok e YouTube Shorts.</span>
+                    </button>
+
+                    <!-- OPÇÃO 2: 30s a 60s (PADRÃO SELECIONADO) -->
+                    <button onclick="selecionarTempo(this, '60')" class="btn-tempo bg-[#f97316]/10 border border-[#f97316] shadow-[0_0_20px_rgba(249,115,22,0.1)] rounded-2xl p-6 flex flex-col items-start justify-center transition-all text-left group">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-2xl text-white font-black">30s - 60s</span>
+                            <span class="text-[9px] uppercase tracking-widest text-[#f97316] font-bold">Padrão Viral</span>
+                        </div>
+                        <span class="text-xs text-gray-300 font-medium leading-relaxed">O formato mais equilibrado e aceito. Ideal para monetização no Instagram Reels.</span>
+                    </button>
+
+                    <!-- OPÇÃO 3: Mais de 60s -->
+                    <button onclick="selecionarTempo(this, '120')" class="btn-tempo bg-black/40 border border-gray-800 rounded-2xl p-6 flex flex-col items-start justify-center transition-all hover:border-gray-600 text-left group">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-2xl text-white font-black">&gt; 60s</span>
+                            <span class="text-[9px] uppercase tracking-widest text-gray-500 font-bold group-hover:text-white transition-colors">Profundo</span>
+                        </div>
+                        <span class="text-xs text-gray-400 font-medium leading-relaxed">Construção de narrativa longa. Perfeito para cortes de Podcasts e Aulas.</span>
+                    </button>
+
+                </div>
+                
+                <div class="mt-10 p-5 bg-black/30 border border-gray-800 rounded-2xl flex items-center gap-4">
+                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <p class="text-[11px] text-gray-500 leading-relaxed font-medium">
+                        Ao selecionar um parâmetro, a Inteligência Artificial ajustará o limite de leitura da transcrição para buscar ganchos que se resolvam dentro da janela de tempo estipulada.
+                    </p>
+                </div>
             </div>
         </div>
 
