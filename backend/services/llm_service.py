@@ -13,7 +13,7 @@ NGROK_URL = os.getenv("API_BASE_URL")
 MODELO_IA = "openrouter/free"
 
 def sugerir_cortes(transcricao):
-    print("🧠 [Brain Engine] Buscando cortes virais padrão OpusClip...")
+    print("🧠 [Brain Engine] Buscando cortes virais padrão...")
 
     if not transcricao or len(transcricao.strip()) < 50:
         return []
@@ -30,7 +30,8 @@ def sugerir_cortes(transcricao):
           "inicio": "00:10",
           "fim": "00:55",
           "gancho": "A frase exata que fisga nos primeiros 3 segundos",
-          "motivo": "Explicação do gatilho psicológico (Pathos, Logos, etc)"
+          "motivo": "Explicação do gatilho psicológico (Pathos, Logos, etc)",
+          "texto_corte": "A transcrição exata e completa de tudo o que foi dito neste trecho."
       }
     ]
     O viral_score deve ser um número de 70 a 99 baseando-se no potencial de viralização.

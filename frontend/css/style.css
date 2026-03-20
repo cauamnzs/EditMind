@@ -2,7 +2,6 @@ body {
     font-family: 'Inter', sans-serif;
     background: radial-gradient(circle at 50% -20%, #25160d, #0b0d11 60%);
     background-attachment: fixed;
-    overflow: hidden; 
 }
 
 .glass-panel {
@@ -74,3 +73,22 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #f97316; }
+
+/* ========================================== */
+/* ESTILO DA LEGENDA NATIVA DO PLAYER (CUES)  */
+/* ========================================== */
+video::cue {
+    background-color: transparent;
+    color: #fbd38d; /* Um amarelo/laranja suave */
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 1.8rem;
+    /* Borda preta grossa para leitura em qualquer fundo */
+    text-shadow: 
+        3px 3px 0 #000, 
+        -3px -3px 0 #000, 
+        3px -3px 0 #000, 
+        -3px 3px 0 #000,
+        0px 4px 10px rgba(0,0,0,0.8);
+}
+
