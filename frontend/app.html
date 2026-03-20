@@ -10,7 +10,7 @@
 </head>
 <body class="text-gray-100 h-screen flex flex-col">
 
-    <header class="w-full flex justify-between items-center px-10 py-6 z-20">
+    <header class="w-full flex justify-center md:justify-between items-center px-6 md:px-10 py-6 z-20">
         <a href="index.html" class="cursor-pointer hover:scale-105 transition-transform block z-50">
             <h1 class="text-3xl font-extrabold italic tracking-tighter text-white">
                 EDIT<span class="text-[#f97316] drop-shadow-[0_0_15px_rgba(249,115,22,0.5)]">MIND</span>
@@ -18,279 +18,263 @@
         </a>
     </header>
 
-    <main class="flex-1 overflow-y-auto px-10 pb-48 pt-4 w-full max-w-7xl mx-auto">
+    <!-- Adicionado px-4 no mobile, px-10 no desktop. pb-36 no mobile para não sobrepor o menu -->
+    <main class="flex-1 overflow-y-auto px-4 md:px-10 pb-36 md:pb-48 pt-4 w-full max-w-7xl mx-auto">
         
         <div id="aba-inicio" class="view-section active w-full">
-            <div class="mb-10 text-center">
-                <h2 class="text-4xl font-black text-white tracking-tight">Novo Projeto</h2>
-                <p class="text-gray-500 text-sm mt-2">Alimente a IA com seu arquivo bruto.</p>
+            <div class="mb-6 md:mb-10 text-center">
+                <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Novo Projeto</h2>
+                <p class="text-gray-500 text-xs md:text-sm mt-2">Alimente a IA com seu arquivo bruto.</p>
             </div>
 
-            <div id="painel-upload" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch transition-all duration-500">
+            <div id="painel-upload" class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-stretch transition-all duration-500">
                 <div class="lg:col-span-7">
-                    <div id="area-soltar" class="glass-panel rounded-[3rem] p-12 h-full min-h-[420px] border border-gray-800 flex flex-col items-center justify-center group cursor-pointer hover:border-[#f97316] transition-all duration-500 orange-glow relative overflow-hidden">
+                    <!-- Ajuste de padding e altura mínima para mobile -->
+                    <div id="area-soltar" class="glass-panel rounded-[2rem] md:rounded-[3rem] p-6 md:p-12 h-full min-h-[350px] md:min-h-[420px] border border-gray-800 flex flex-col items-center justify-center group cursor-pointer hover:border-[#f97316] transition-all duration-500 orange-glow relative overflow-hidden">
                         <div class="absolute inset-0 bg-gradient-to-b from-[#f97316]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                        <div class="relative w-28 h-28 mb-8 z-10">
+                        <div class="relative w-20 h-20 md:w-28 md:h-28 mb-6 md:mb-8 z-10">
                             <div class="absolute inset-0 bg-[#f97316] rounded-full blur-[40px] opacity-10 group-hover:opacity-40 transition-opacity duration-500"></div>
                             <svg class="relative w-full h-full text-gray-500 group-hover:text-[#f97316] transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-white mb-2 z-10">Arraste a Mídia Aqui</h3>
-                        <p class="text-gray-500 text-center text-sm max-w-xs leading-relaxed mb-8 z-10">Suporta MP4 e MOV para extração de alta fidelidade.</p>
+                        <h3 id="texto-arraste" class="text-xl md:text-2xl font-bold text-white mb-2 z-10 text-center">Arraste a Mídia Aqui</h3>
+                        <p class="text-gray-500 text-center text-xs md:text-sm max-w-xs leading-relaxed mb-6 md:mb-8 z-10">Suporta MP4 e MOV para extração de alta fidelidade.</p>
                         
-                        <input type="file" id="entrada-arquivo" class="hidden" accept="video/mp4,video/quicktime" />
+                        <input type="file" id="entrada-arquivo" class="hidden" accept="video/mp4,video/quicktime,audio/*" />
                         
-                        <button onclick="document.getElementById('entrada-arquivo').click()" class="z-10 bg-[#f97316] hover:bg-[#ea580c] text-white font-black py-4 px-10 rounded-full text-xs uppercase tracking-widest shadow-[0_10px_30px_rgba(249,115,22,0.3)] hover:scale-105 active:scale-95 transition-all">
+                        <button onclick="document.getElementById('entrada-arquivo').click()" class="z-10 bg-[#f97316] hover:bg-[#ea580c] text-white font-black py-3 px-8 md:py-4 md:px-10 rounded-full text-[10px] md:text-xs uppercase tracking-widest shadow-[0_10px_30px_rgba(249,115,22,0.3)] hover:scale-105 active:scale-95 transition-all w-full sm:w-auto">
                             Selecionar Arquivo
                         </button>
 
-                        <a href="assets/video_teste_15s.mp4" download class="mt-6 z-10 text-[10px] text-gray-500 font-bold uppercase tracking-widest hover:text-[#f97316] transition-colors underline decoration-gray-700 hover:decoration-[#f97316] underline-offset-4">
+                        <a href="assets/video_teste_15s.mp4" download class="mt-6 z-10 text-[9px] md:text-[10px] text-gray-500 font-bold uppercase tracking-widest hover:text-[#f97316] transition-colors underline decoration-gray-700 hover:decoration-[#f97316] underline-offset-4 text-center">
                             Não tem um vídeo? Baixe o teste (1MB)
                         </a>
 
-                        <div class="flex items-center w-full mt-8 mb-6 opacity-50 z-10">
+                        <div class="flex items-center w-full mt-6 md:mt-8 mb-4 md:mb-6 opacity-50 z-10 hidden md:flex">
                             <div class="flex-1 border-t border-gray-700"></div>
-                            <span class="px-4 text-[10px] text-gray-500 font-bold uppercase tracking-[0.3em]">Ou processe via link</span>
+                            <span class="px-4 text-[9px] md:text-[10px] text-gray-500 font-bold uppercase tracking-[0.3em] text-center">Ou processe via link</span>
                             <div class="flex-1 border-t border-gray-700"></div>
                         </div>
                         
-                        <div class="z-10 w-full max-w-sm bg-black/50 p-1.5 rounded-full flex items-center border border-gray-800 focus-within:border-[#f97316]/50 focus-within:shadow-[0_0_20px_rgba(249,115,22,0.15)] transition-all">
+                        <div class="z-10 w-full max-w-sm bg-black/50 p-1 md:p-1.5 rounded-full flex items-center border border-gray-800 focus-within:border-[#f97316]/50 focus-within:shadow-[0_0_20px_rgba(249,115,22,0.15)] transition-all mt-4 md:mt-0">
                             <div class="pl-4 pr-2 text-gray-500 flex-shrink-0">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
                             </div>
-                            <input type="text" id="input-yt-principal" placeholder="Cole o URL do YouTube aqui" class="bg-transparent border-none outline-none text-xs text-gray-300 flex-1 py-2 px-2 w-full placeholder-gray-600">
-                            <button onclick="window.processarLinkYoutubePrincipal()" id="btn-yt-principal" class="bg-white/5 hover:bg-[#f97316] text-gray-400 hover:text-white text-[10px] font-black uppercase tracking-widest py-3 px-6 rounded-full transition-all flex-shrink-0 border border-gray-700 hover:border-[#f97316]">
+                            <input type="text" id="input-yt-principal" placeholder="Cole o URL do YouTube aqui" class="bg-transparent border-none outline-none text-[10px] md:text-xs text-gray-300 flex-1 py-2 px-2 w-full placeholder-gray-600">
+                            <button onclick="window.processarLinkYoutubePrincipal()" id="btn-yt-principal" class="bg-white/5 hover:bg-[#f97316] text-gray-400 hover:text-white text-[9px] md:text-[10px] font-black uppercase tracking-widest py-2 px-4 md:py-3 md:px-6 rounded-full transition-all flex-shrink-0 border border-gray-700 hover:border-[#f97316]">
                                 Processar
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:col-span-5 grid grid-cols-2 gap-5">
-                    <div id="status-envio" class="col-span-2 glass-panel p-8 rounded-[2.5rem] flex flex-col justify-between min-h-[160px]">
-                        <div class="flex justify-between items-start mb-6">
-                            <span class="text-[10px] text-gray-500 uppercase font-black tracking-[0.2em]">Engine Status</span>
-                            <span id="porcentagem-envio" class="text-4xl font-black text-white">0%</span>
+                <div class="lg:col-span-5 grid grid-cols-2 gap-4 md:gap-5">
+                    <div id="status-envio" class="col-span-2 glass-panel p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] flex flex-col justify-between min-h-[140px] md:min-h-[160px]">
+                        <div class="flex justify-between items-start mb-4 md:mb-6">
+                            <span class="text-[9px] md:text-[10px] text-gray-500 uppercase font-black tracking-[0.2em]">Engine Status</span>
+                            <span id="porcentagem-envio" class="text-3xl md:text-4xl font-black text-white">0%</span>
                         </div>
                         <div>
-                            <div class="flex justify-between text-xs mb-3 font-semibold">
-                                <span id="nome-arquivo" class="text-gray-400 truncate w-3/4 italic">Aguardando feed...</span>
+                            <div class="flex justify-between text-[10px] md:text-xs mb-2 md:mb-3 font-semibold">
+                                <span id="nome-arquivo" class="text-gray-400 truncate w-full italic pr-2">Aguardando feed...</span>
                             </div>
-                            <div class="w-full bg-gray-900 rounded-full h-2 overflow-hidden shadow-inner">
+                            <div class="w-full bg-gray-900 rounded-full h-2 md:h-2.5 overflow-hidden shadow-inner">
                                 <div id="barra-progresso" class="bg-gradient-to-r from-[#f97316] to-yellow-500 h-full w-0 transition-all duration-500 shadow-[0_0_10px_#f97316]"></div>
                             </div>
-                            <p id="mensagem-envio" class="text-[11px] text-gray-500 mt-3 italic text-center">Motor Python em Standby.</p>
+                            <p id="mensagem-envio" class="text-[9px] md:text-[11px] text-gray-500 mt-2 md:mt-3 italic text-center">Motor Python em Standby.</p>
                         </div>
                     </div>
 
-                    <div class="glass-panel p-6 rounded-[2rem] bento-card">
-                        <span class="text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-2">Resolução</span>
-                        <span id="meta-res" class="text-xl font-bold text-white tracking-tighter">—</span>
+                    <div class="glass-panel p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] bento-card flex flex-col justify-center">
+                        <span class="text-[9px] md:text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-1 md:mb-2">Resolução</span>
+                        <span id="meta-res" class="text-lg md:text-xl font-bold text-white tracking-tighter">—</span>
                     </div>
                     
-                    <div class="glass-panel p-6 rounded-[2rem] bento-card">
-                        <span class="text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-2">Framerate</span>
-                        <span id="meta-fps" class="text-xl font-bold text-white tracking-tighter">—</span>
+                    <div class="glass-panel p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] bento-card flex flex-col justify-center">
+                        <span class="text-[9px] md:text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-1 md:mb-2">Framerate</span>
+                        <span id="meta-fps" class="text-lg md:text-xl font-bold text-white tracking-tighter">—</span>
                     </div>
 
-                    <div class="col-span-2 glass-panel p-6 rounded-[2.5rem] bento-card flex justify-between items-center">
+                    <div class="col-span-2 glass-panel p-5 md:p-6 rounded-[2rem] md:rounded-[2.5rem] bento-card flex justify-between items-center">
                         <div>
-                            <span class="text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-1">Duração Total</span>
-                            <span id="meta-duracao" class="text-3xl font-black text-white tracking-tighter">—</span>
+                            <span class="text-[9px] md:text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-1">Duração Total</span>
+                            <span id="meta-duracao" class="text-2xl md:text-3xl font-black text-white tracking-tighter">—</span>
                         </div>
-                        <div class="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center text-[#f97316]">
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div class="w-10 h-10 md:w-14 md:h-14 bg-white/5 rounded-full flex items-center justify-center text-[#f97316]">
+                            <svg class="w-5 h-5 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- PAINEL IA: GALERIA E EDITOR -->
-            <div id="painel-ia" class="hidden flex-col gap-6 opacity-0 transition-opacity duration-700 w-full">
-                
+            <div id="painel-ia" class="hidden flex-col gap-6 opacity-0 transition-opacity duration-700 w-full mt-8">
                 <!-- TELA 1: GALERIA DE CORTES -->
                 <div id="tela-galeria" class="flex flex-col w-full transition-all duration-500">
-                    <div class="flex items-center justify-between mb-8">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 md:mb-8 gap-4">
                         <div>
-                            <h3 class="text-3xl font-black text-white tracking-tight">Cortes Encontrados ⚡</h3>
-                            <p class="text-gray-500 text-sm mt-1">Selecione um dos ganchos virais para abrir o estúdio de edição.</p>
+                            <h3 class="text-2xl md:text-3xl font-black text-white tracking-tight">Cortes Encontrados ⚡</h3>
+                            <p class="text-gray-500 text-xs md:text-sm mt-1">Selecione um dos ganchos virais para abrir o estúdio de edição.</p>
                         </div>
-                        <button onclick="resetarNovoCorte()" class="bg-black/50 border border-gray-800 hover:border-gray-500 text-gray-400 hover:text-white px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">
+                        <button onclick="resetarNovoCorte()" class="bg-black/50 border border-gray-800 hover:border-gray-500 text-gray-400 hover:text-white px-5 py-2.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all">
                             Descartar Lote
                         </button>
                     </div>
 
-                    <!-- Os cards vão entrar aqui, em um Grid de 3 colunas -->
-                    <div id="lista-cortes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+                    <div id="lista-cortes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                         <!-- Cards injetados via JS -->
                     </div>
                 </div>
 
-                <!-- TELA 2: ESTÚDIO DO SHORT (ESCONDIDA POR PADRÃO) -->
+                <!-- TELA 2: ESTÚDIO DO SHORT -->
                 <div id="tela-editor" class="hidden flex-col w-full transition-all duration-500 opacity-0 scale-95">
-                    
-                    <div class="flex items-center gap-4 mb-8 border-b border-gray-800 pb-6">
-                        <button onclick="fecharEditor()" class="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-800 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    <div class="flex items-center gap-4 mb-6 md:mb-8 border-b border-gray-800 pb-4 md:pb-6">
+                        <button onclick="fecharEditor()" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-900 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-800 transition-all shrink-0">
+                            <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </button>
-                        <div>
-                            <h3 id="editor-titulo" class="text-2xl font-black text-white tracking-tight">Título do Corte</h3>
-                            <span id="editor-badge" class="bg-[#f97316]/20 text-[#f97316] text-[10px] font-black uppercase px-2 py-0.5 rounded-md border border-[#f97316]/30 mt-1 inline-block">Score: 90</span>
+                        <div class="min-w-0">
+                            <h3 id="editor-titulo" class="text-xl md:text-2xl font-black text-white tracking-tight truncate">Título do Corte</h3>
+                            <span id="editor-badge" class="bg-[#f97316]/20 text-[#f97316] text-[9px] md:text-[10px] font-black uppercase px-2 py-0.5 rounded-md border border-[#f97316]/30 mt-1 inline-block">Score: 90</span>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                        
-                        <!-- ESQUERDA: PLAYER VERTICAL (9:16) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10">
                         <div class="lg:col-span-4 flex flex-col items-center">
-                            <div class="relative w-full max-w-[280px] aspect-[9/16] bg-black rounded-[2rem] overflow-hidden border-4 border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] group">
-                                <!-- object-cover faz o vídeo horizontal preencher a tela vertical (corte central) -->
-                                <video id="player-vertical" class="w-full h-full object-cover" controls playsinline muted crossorigin="anonymous">
-                                </video>
-                                <div class="absolute top-4 left-4 right-4 flex justify-between items-center pointer-events-none">
-                                    <span class="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white border border-white/10">PREVIEW</span>
-                                    <span id="editor-tempo" class="bg-red-500/80 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-white shadow-lg">00:00 - 00:00</span>
+                            <div class="relative w-full max-w-[240px] md:max-w-[280px] aspect-[9/16] bg-black rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border-2 md:border-4 border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] group">
+                                <video id="player-vertical" class="w-full h-full object-cover" controls playsinline muted crossorigin="anonymous"></video>
+                                <div class="absolute top-3 md:top-4 left-3 md:left-4 right-3 md:right-4 flex justify-between items-center pointer-events-none">
+                                    <span class="bg-black/60 backdrop-blur-md px-2 py-1 md:px-3 rounded-full text-[8px] md:text-[10px] font-bold text-white border border-white/10">PREVIEW</span>
+                                    <span id="editor-tempo" class="bg-red-500/80 backdrop-blur-md px-2 py-1 md:px-3 rounded-full text-[8px] md:text-[10px] font-bold text-white shadow-lg">00:00 - 00:00</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- DIREITA: TRANSCRIÇÃO E DADOS -->
-                        <div class="lg:col-span-8 flex flex-col h-full">
-                            
-                            <div class="grid grid-cols-2 gap-4 mb-6">
-                                <div class="bg-black/40 rounded-2xl p-5 border border-white/5">
-                                    <span class="text-[9px] text-gray-500 uppercase font-black tracking-widest block mb-2">🪝 O Gancho (Hook)</span>
-                                    <p id="editor-gancho" class="text-sm font-bold text-white leading-snug">...</p>
+                        <div class="lg:col-span-8 flex flex-col h-full gap-4 md:gap-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="bg-black/40 rounded-2xl p-4 md:p-5 border border-white/5">
+                                    <span class="text-[8px] md:text-[9px] text-gray-500 uppercase font-black tracking-widest block mb-2">🪝 O Gancho (Hook)</span>
+                                    <p id="editor-gancho" class="text-xs md:text-sm font-bold text-white leading-snug">...</p>
                                 </div>
-                                <div class="bg-black/40 rounded-2xl p-5 border border-white/5">
-                                    <span class="text-[9px] text-gray-500 uppercase font-black tracking-widest block mb-2">🧠 Por que viraliza?</span>
-                                    <p id="editor-motivo" class="text-xs text-gray-400 leading-relaxed">...</p>
+                                <div class="bg-black/40 rounded-2xl p-4 md:p-5 border border-white/5">
+                                    <span class="text-[8px] md:text-[9px] text-gray-500 uppercase font-black tracking-widest block mb-2">🧠 Por que viraliza?</span>
+                                    <p id="editor-motivo" class="text-[10px] md:text-xs text-gray-400 leading-relaxed">...</p>
                                 </div>
                             </div>
 
-                            <!-- CAIXA DE EDIÇÃO DA TRANSCRIÇÃO -->
-                            <div class="flex-1 flex flex-col glass-panel rounded-3xl p-6 border border-gray-800 min-h-[250px]">
-                                <div class="flex justify-between items-center mb-4">
-                                    <span class="text-[10px] text-[#f97316] uppercase font-black tracking-[0.2em] flex items-center gap-2">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                        Transcrição do Corte (Editável)
+                            <div class="flex-1 flex flex-col glass-panel rounded-2xl md:rounded-3xl p-4 md:p-6 border border-gray-800 min-h-[200px] md:min-h-[250px]">
+                                <div class="flex justify-between items-center mb-3 md:mb-4">
+                                    <span class="text-[9px] md:text-[10px] text-[#f97316] uppercase font-black tracking-[0.2em] flex items-center gap-2">
+                                        <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        Transcrição (Editável)
                                     </span>
                                 </div>
-                                <textarea id="editor-texto" class="w-full flex-1 bg-[#0b0d11]/80 border border-gray-800 rounded-2xl p-5 text-gray-300 text-sm focus:border-[#f97316]/50 focus:shadow-[0_0_15px_rgba(249,115,22,0.1)] outline-none resize-none leading-relaxed transition-all" placeholder="A transcrição deste trecho aparecerá aqui..."></textarea>
+                                <textarea id="editor-texto" class="w-full flex-1 bg-[#0b0d11]/80 border border-gray-800 rounded-xl md:rounded-2xl p-4 md:p-5 text-gray-300 text-xs md:text-sm focus:border-[#f97316]/50 focus:shadow-[0_0_15px_rgba(249,115,22,0.1)] outline-none resize-none leading-relaxed transition-all" placeholder="A transcrição deste trecho aparecerá aqui..."></textarea>
                             </div>
 
-                            <div class="mt-6 flex justify-end">
-                                <button class="bg-[#f97316] hover:bg-white hover:text-[#f97316] text-white font-black py-4 px-12 rounded-full text-[10px] uppercase tracking-[0.2em] shadow-[0_15px_30px_rgba(249,115,22,0.3)] transition-all transform hover:scale-105">
+                            <div class="mt-2 md:mt-4 flex justify-end">
+                                <button class="bg-[#f97316] hover:bg-white hover:text-[#f97316] text-white font-black py-3 px-8 md:py-4 md:px-12 rounded-full text-[9px] md:text-[10px] uppercase tracking-[0.2em] shadow-[0_15px_30px_rgba(249,115,22,0.3)] transition-all transform hover:scale-105 w-full sm:w-auto">
                                     Gerar Vídeo Final
                                 </button>
                             </div>
                         </div>
-
                     </div>
                 </div>
-
             </div>
 
         </div>
 
-        <div id="aba-conteudos" class="view-section w-full">
-            <div class="mb-10 text-center">
-                <h2 class="text-4xl font-black text-white tracking-tight">Meus Conteúdos</h2>
-                <p class="text-gray-500 text-sm mt-2">Sua esteira de cortes aprovados.</p>
+        <div id="aba-conteudos" class="view-section w-full hidden">
+            <div class="mb-6 md:mb-10 text-center">
+                <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Meus Conteúdos</h2>
+                <p class="text-gray-500 text-xs md:text-sm mt-2">Sua esteira de cortes aprovados.</p>
             </div>
-            <div class="glass-panel rounded-[3rem] p-20 flex flex-col items-center justify-center text-center">
-                <div class="w-24 h-24 bg-gray-800/40 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                    <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            <div class="glass-panel rounded-[2rem] md:rounded-[3rem] p-10 md:p-20 flex flex-col items-center justify-center text-center">
+                <div class="w-16 h-16 md:w-24 md:h-24 bg-gray-800/40 rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-inner">
+                    <svg class="w-8 h-8 md:w-10 md:h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-2">Vazio por aqui</h3>
-                <p class="text-gray-500 text-sm max-w-sm mb-8">Nenhum lote foi processado. Inicie fazendo o upload do seu primeiro arquivo bruto.</p>
-                <button onclick="mudarAba('inicio')" class="px-8 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-full text-xs tracking-widest uppercase transition-all border border-gray-700 hover:border-gray-500">Voltar ao Início</button>
+                <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Vazio por aqui</h3>
+                <p class="text-gray-500 text-xs md:text-sm max-w-sm mb-6 md:mb-8">Nenhum lote foi processado. Inicie fazendo o upload do seu primeiro arquivo bruto.</p>
+                <button onclick="mudarAba('inicio')" class="px-6 py-2.5 md:px-8 md:py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-full text-[10px] md:text-xs tracking-widest uppercase transition-all border border-gray-700 hover:border-gray-500">Voltar ao Início</button>
             </div>
         </div>
 
-        <div id="aba-ferramentas" class="view-section w-full">
-            <div class="mb-10 text-center">
-                <h2 class="text-4xl font-black text-white tracking-tight">Ferramentas Extras</h2>
-                <p class="text-gray-500 text-sm mt-2">Utilitários de alta performance para criadores.</p>
+        <div id="aba-ferramentas" class="view-section w-full hidden">
+            <div class="mb-6 md:mb-10 text-center">
+                <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Ferramentas Extras</h2>
+                <p class="text-gray-500 text-xs md:text-sm mt-2">Utilitários de alta performance para criadores.</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="glass-panel rounded-[2.5rem] p-8 bento-card relative overflow-hidden group">
-                    <div class="absolute -right-16 -top-16 w-56 h-56 bg-red-600/10 rounded-full blur-[50px] group-hover:bg-red-600/20 transition-all duration-700"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                <div class="glass-panel rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 bento-card relative overflow-hidden group">
+                    <div class="absolute -right-16 -top-16 w-40 h-40 md:w-56 md:h-56 bg-red-600/10 rounded-full blur-[50px] group-hover:bg-red-600/20 transition-all duration-700"></div>
                     
-                    <div class="flex items-center mb-8 relative z-10">
-                        <div class="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center mr-5 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
-                            <svg class="w-7 h-7 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                    <div class="flex items-center mb-6 md:mb-8 relative z-10">
+                        <div class="w-12 h-12 md:w-14 md:h-14 bg-red-500/10 rounded-xl md:rounded-2xl flex items-center justify-center mr-4 md:mr-5 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+                            <svg class="w-6 h-6 md:w-7 md:h-7 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold text-white tracking-tight">YT Downloader</h3>
-                            <p class="text-xs text-gray-500 font-medium">Extração direta em 1080p</p>
+                            <h3 class="text-xl md:text-2xl font-bold text-white tracking-tight">YT Downloader</h3>
+                            <p class="text-[10px] md:text-xs text-gray-500 font-medium">Extração direta em 1080p</p>
                         </div>
                     </div>
                     
                     <div class="relative z-10">
-                        <label class="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3">URL do Vídeo Original</label>
-                        <input type="text" id="input-youtube" placeholder="https://youtube.com/..." class="w-full bg-[#0b0d11]/80 border border-gray-800 rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors mb-5 shadow-inner">
+                        <label class="block text-[9px] md:text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2 md:mb-3">URL do Vídeo</label>
+                        <input type="text" id="input-youtube" placeholder="https://youtube.com/..." class="w-full bg-[#0b0d11]/80 border border-gray-800 rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 text-xs md:text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors mb-4 md:mb-5 shadow-inner">
                         
-                        <button onclick="baixarYouTube()" id="btn-youtube" class="w-full bg-white/5 hover:bg-red-600 text-gray-300 hover:text-white font-bold py-4 rounded-2xl text-sm transition-all flex items-center justify-center border border-gray-700 hover:border-red-500 shadow-lg hover:shadow-[0_0_20px_rgba(239,68,68,0.4)]">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <button onclick="baixarYouTube()" id="btn-youtube" class="w-full bg-white/5 hover:bg-red-600 text-gray-300 hover:text-white font-bold py-3 md:py-4 rounded-xl md:rounded-2xl text-xs md:text-sm transition-all flex items-center justify-center border border-gray-700 hover:border-red-500 shadow-lg hover:shadow-[0_0_20px_rgba(239,68,68,0.4)]">
+                            <svg class="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             Puxar para Nuvem
                         </button>
                     </div>
                 </div>
 
-                <div class="glass-panel rounded-[2.5rem] border border-gray-800 border-dashed p-8 flex flex-col items-center justify-center opacity-40">
-                    <svg class="w-10 h-10 text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                    <p class="text-xs font-black tracking-widest uppercase text-gray-500">Módulo em Construção</p>
+                <div class="glass-panel rounded-[2rem] md:rounded-[2.5rem] border border-gray-800 border-dashed p-6 md:p-8 flex flex-col items-center justify-center opacity-40 min-h-[200px]">
+                    <svg class="w-8 h-8 md:w-10 md:h-10 text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                    <p class="text-[10px] md:text-xs font-black tracking-widest uppercase text-gray-500 text-center">Módulo em Construção</p>
                 </div>
             </div>
         </div>
 
-        <!-- ABA CONFIGURAÇÕES (AGORA INTERATIVA) -->
-        <div id="aba-configs" class="view-section w-full">
-            <div class="mb-10 text-center">
-                <h2 class="text-4xl font-black text-white tracking-tight">Parâmetros de Extração</h2>
-                <p class="text-gray-500 text-sm mt-2">Calibre o algoritmo da IA para focar no formato ideal da sua audiência.</p>
+        <div id="aba-configs" class="view-section w-full hidden">
+            <div class="mb-6 md:mb-10 text-center">
+                <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Parâmetros de Extração</h2>
+                <p class="text-gray-500 text-xs md:text-sm mt-2">Calibre o algoritmo da IA.</p>
             </div>
-            <div class="max-w-4xl mx-auto glass-panel rounded-[3rem] p-12 border border-gray-800">
-                <h3 class="text-[10px] font-black tracking-[0.2em] text-[#f97316] uppercase mb-8">Duração Alvo do Corte</h3>
+            <div class="max-w-4xl mx-auto glass-panel rounded-[2rem] md:rounded-[3rem] p-6 md:p-12 border border-gray-800">
+                <h3 class="text-[9px] md:text-[10px] font-black tracking-[0.2em] text-[#f97316] uppercase mb-6 md:mb-8 text-center md:text-left">Duração Alvo do Corte</h3>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="botoes-tempo">
-                    
-                    <!-- OPÇÃO 1: Menos de 30s -->
-                    <button onclick="selecionarTempo(this, '30')" class="btn-tempo bg-black/40 border border-gray-800 rounded-2xl p-6 flex flex-col items-start justify-center transition-all hover:border-gray-600 text-left group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <span class="text-2xl text-white font-black">&lt; 30s</span>
-                            <span class="text-[9px] uppercase tracking-widest text-gray-500 font-bold group-hover:text-white transition-colors">Dinâmico</span>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6" id="botoes-tempo">
+                    <button onclick="selecionarTempo(this, '30')" class="btn-tempo bg-black/40 border border-gray-800 rounded-2xl p-5 md:p-6 flex flex-col items-start justify-center transition-all hover:border-gray-600 text-left group">
+                        <div class="flex items-center gap-2 md:gap-3 mb-2">
+                            <span class="text-xl md:text-2xl text-white font-black">&lt; 30s</span>
+                            <span class="text-[8px] md:text-[9px] uppercase tracking-widest text-gray-500 font-bold group-hover:text-white transition-colors">Dinâmico</span>
                         </div>
-                        <span class="text-xs text-gray-400 font-medium leading-relaxed">Alta retenção e loop rápido. Ideal para tráfego frio no TikTok e YouTube Shorts.</span>
+                        <span class="text-[10px] md:text-xs text-gray-400 font-medium leading-relaxed">Alta retenção e loop rápido.</span>
                     </button>
 
-                    <!-- OPÇÃO 2: 30s a 60s (PADRÃO SELECIONADO) -->
-                    <button onclick="selecionarTempo(this, '60')" class="btn-tempo bg-[#f97316]/10 border border-[#f97316] shadow-[0_0_20px_rgba(249,115,22,0.1)] rounded-2xl p-6 flex flex-col items-start justify-center transition-all text-left group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <span class="text-2xl text-white font-black">30s - 60s</span>
-                            <span class="text-[9px] uppercase tracking-widest text-[#f97316] font-bold">Padrão Viral</span>
+                    <button onclick="selecionarTempo(this, '60')" class="btn-tempo bg-[#f97316]/10 border border-[#f97316] shadow-[0_0_20px_rgba(249,115,22,0.1)] rounded-2xl p-5 md:p-6 flex flex-col items-start justify-center transition-all text-left group">
+                        <div class="flex items-center gap-2 md:gap-3 mb-2">
+                            <span class="text-xl md:text-2xl text-white font-black">30s - 60s</span>
+                            <span class="text-[8px] md:text-[9px] uppercase tracking-widest text-[#f97316] font-bold">Padrão Viral</span>
                         </div>
-                        <span class="text-xs text-gray-300 font-medium leading-relaxed">O formato mais equilibrado e aceito. Ideal para monetização no Instagram Reels.</span>
+                        <span class="text-[10px] md:text-xs text-gray-300 font-medium leading-relaxed">O formato mais equilibrado e aceito.</span>
                     </button>
 
-                    <!-- OPÇÃO 3: Mais de 60s -->
-                    <button onclick="selecionarTempo(this, '120')" class="btn-tempo bg-black/40 border border-gray-800 rounded-2xl p-6 flex flex-col items-start justify-center transition-all hover:border-gray-600 text-left group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <span class="text-2xl text-white font-black">&gt; 60s</span>
-                            <span class="text-[9px] uppercase tracking-widest text-gray-500 font-bold group-hover:text-white transition-colors">Profundo</span>
+                    <button onclick="selecionarTempo(this, '120')" class="btn-tempo bg-black/40 border border-gray-800 rounded-2xl p-5 md:p-6 flex flex-col items-start justify-center transition-all hover:border-gray-600 text-left group">
+                        <div class="flex items-center gap-2 md:gap-3 mb-2">
+                            <span class="text-xl md:text-2xl text-white font-black">&gt; 60s</span>
+                            <span class="text-[8px] md:text-[9px] uppercase tracking-widest text-gray-500 font-bold group-hover:text-white transition-colors">Profundo</span>
                         </div>
-                        <span class="text-xs text-gray-400 font-medium leading-relaxed">Construção de narrativa longa. Perfeito para cortes de Podcasts e Aulas.</span>
+                        <span class="text-[10px] md:text-xs text-gray-400 font-medium leading-relaxed">Construção de narrativa longa.</span>
                     </button>
-
                 </div>
                 
-                <div class="mt-10 p-5 bg-black/30 border border-gray-800 rounded-2xl flex items-center gap-4">
-                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 shrink-0">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div class="mt-8 md:mt-10 p-4 md:p-5 bg-black/30 border border-gray-800 rounded-xl md:rounded-2xl flex items-start md:items-center gap-3 md:gap-4">
+                    <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 shrink-0 mt-1 md:mt-0">
+                        <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
-                    <p class="text-[11px] text-gray-500 leading-relaxed font-medium">
-                        Ao selecionar um parâmetro, a Inteligência Artificial ajustará o limite de leitura da transcrição para buscar ganchos que se resolvam dentro da janela de tempo estipulada.
+                    <p class="text-[10px] md:text-[11px] text-gray-500 leading-relaxed font-medium">
+                        Ao selecionar um parâmetro, a Inteligência Artificial ajustará o limite de leitura da transcrição.
                     </p>
                 </div>
             </div>
@@ -298,34 +282,36 @@
 
     </main>
 
-    <div class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50">
-        <nav class="glass-panel rounded-[2rem] px-12 py-5 flex items-center gap-14 shadow-[0_30px_60px_rgba(0,0,0,0.7)] border border-gray-700/50">
-            <button onclick="mudarAba('inicio')" class="nav-item active flex flex-col items-center justify-center text-gray-500 hover:text-white w-20 relative group">
-                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#f97316] rounded-full blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
-                <svg class="w-8 h-8 mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                <span class="nav-text text-[10px] font-black uppercase tracking-widest">Início</span>
-                <div class="nav-dot w-1.5 h-1.5 rounded-full mt-2"></div>
+    <!-- Menu Inferior ajustado para Mobile -->
+    <div class="fixed bottom-6 md:bottom-10 w-full md:w-auto md:left-1/2 md:-translate-x-1/2 px-4 md:px-0 z-50 flex justify-center">
+        <nav class="glass-panel rounded-full md:rounded-[2rem] px-4 md:px-12 py-3 md:py-5 flex items-center justify-around md:justify-center gap-2 md:gap-14 shadow-[0_30px_60px_rgba(0,0,0,0.7)] border border-gray-700/50 w-full max-w-[400px] md:max-w-none">
+            
+            <button onclick="mudarAba('inicio')" class="nav-item active flex flex-col items-center justify-center text-gray-500 hover:text-white w-16 md:w-20 relative group">
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-20 md:h-20 bg-[#f97316] rounded-full blur-[15px] md:blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
+                <svg class="w-6 h-6 md:w-8 md:h-8 mb-1 md:mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span class="nav-text text-[8px] md:text-[10px] font-black uppercase tracking-widest hidden md:block">Início</span>
+                <div class="nav-dot w-1 h-1 md:w-1.5 md:h-1.5 rounded-full mt-1 md:mt-2"></div>
             </button>
 
-            <button onclick="mudarAba('conteudos')" class="nav-item flex flex-col items-center justify-center text-gray-500 hover:text-white w-24 relative group">
-                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#f97316] rounded-full blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
-                <svg class="w-8 h-8 mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                <span class="nav-text text-[10px] font-black uppercase tracking-widest text-center">Conteúdos</span>
-                <div class="nav-dot w-1.5 h-1.5 rounded-full mt-2"></div>
+            <button onclick="mudarAba('conteudos')" class="nav-item flex flex-col items-center justify-center text-gray-500 hover:text-white w-16 md:w-24 relative group">
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-20 md:h-20 bg-[#f97316] rounded-full blur-[15px] md:blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
+                <svg class="w-6 h-6 md:w-8 md:h-8 mb-1 md:mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                <span class="nav-text text-[8px] md:text-[10px] font-black uppercase tracking-widest text-center hidden md:block">Conteúdos</span>
+                <div class="nav-dot w-1 h-1 md:w-1.5 md:h-1.5 rounded-full mt-1 md:mt-2"></div>
             </button>
 
-            <button onclick="mudarAba('ferramentas')" class="nav-item flex flex-col items-center justify-center text-gray-500 hover:text-white w-24 relative group">
-                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#f97316] rounded-full blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
-                <svg class="w-8 h-8 mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                <span class="nav-text text-[10px] font-black uppercase tracking-widest">Utilitários</span>
-                <div class="nav-dot w-1.5 h-1.5 rounded-full mt-2"></div>
+            <button onclick="mudarAba('ferramentas')" class="nav-item flex flex-col items-center justify-center text-gray-500 hover:text-white w-16 md:w-24 relative group">
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-20 md:h-20 bg-[#f97316] rounded-full blur-[15px] md:blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
+                <svg class="w-6 h-6 md:w-8 md:h-8 mb-1 md:mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <span class="nav-text text-[8px] md:text-[10px] font-black uppercase tracking-widest hidden md:block">Utilitários</span>
+                <div class="nav-dot w-1 h-1 md:w-1.5 md:h-1.5 rounded-full mt-1 md:mt-2"></div>
             </button>
 
-            <button onclick="mudarAba('configs')" class="nav-item flex flex-col items-center justify-center text-gray-500 hover:text-white w-24 relative group">
-                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#f97316] rounded-full blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
-                <svg class="w-8 h-8 mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                <span class="nav-text text-[10px] font-black uppercase tracking-widest">Configurar</span>
-                <div class="nav-dot w-1.5 h-1.5 rounded-full mt-2"></div>
+            <button onclick="mudarAba('configs')" class="nav-item flex flex-col items-center justify-center text-gray-500 hover:text-white w-16 md:w-24 relative group">
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-20 md:h-20 bg-[#f97316] rounded-full blur-[15px] md:blur-[25px] opacity-0 group-hover:opacity-40 transition-opacity duration-300 -z-10 pointer-events-none"></div>
+                <svg class="w-6 h-6 md:w-8 md:h-8 mb-1 md:mb-2 nav-icon transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <span class="nav-text text-[8px] md:text-[10px] font-black uppercase tracking-widest hidden md:block">Configurar</span>
+                <div class="nav-dot w-1 h-1 md:w-1.5 md:h-1.5 rounded-full mt-1 md:mt-2"></div>
             </button>
             
         </nav>
@@ -333,5 +319,6 @@
     
     <script src="js/app.js"></script>
     <script src="js/editor.js"></script> 
+    
 </body>
 </html>
