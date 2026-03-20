@@ -138,3 +138,57 @@ async def listar_projetos():
         }
     finally:
         db.close()
+
+
+# --- ROTA 3: PROCESSAR DIRETO DO YOUTUBE ---
+@router.post("/api/processar-youtube")
+async def analisar_video_youtube_direto(dados: DadosYoutube): 
+    print(f"🔗 [API] Recebido pedido YT para: {dados.url}")
+    if not any(x in dados.url for x in ["youtube.com", "youtu.be"]):
+         raise HTTPException(status_code=400, detail="Link do YouTube inválido.")
+
+    id_unico = str(uuid.uuid4())
+    nome_seguro_video = f"yt_{id_unico}.mp4"
+    caminho_final_video = os.path.join(DIRETORIO_VIDEOS, nome_seguro_video)
+
+    try:
+        # 1. Faz o download direto pra pasta do servidor (rápido)
+        youtube_service.baixar_video(dados.url, caminho_final_video)
+
+        if not os.path.exists(caminho_final_video):
+            raise HTTPException(status_code=500, detail="Falha no Download do YouTube.")
+
+        # 2. IA Engine entra em ação
+        metadados = ffmpeg_service.extrair_metadados_video(caminho_final_video)
+        nome_audio = ffmpeg_service.extrair_audio_para_ia(caminho_final_video, id_unico)
+        
+        caminho_audio = os.path.join(DIRETORIO_AUDIOS, nome_audio)
+        texto_transcrito = whisper_service.transcrever_audio(caminho_audio)
+        corte_sugerido = llm_service.sugerir_cortes(texto_transcrito)
+
+        # 3. Salva a memória no Banco de Dados
+        db = SessionLocal()
+        try:
+            novo_projeto = VideoProcessado(
+                id=id_unico,
+                nome_original=f"YouTube_{id_unico}",
+                caminho_video=caminho_final_video,
+                caminho_audio=caminho_audio,
+                transcricao=texto_transcrito
+            )
+            db.add(novo_projeto)
+            db.commit()
+        finally:
+            db.close()
+
+        # 4. Devolve o resultado pro Front-end acender a tela
+        return {
+            "sucesso": True,
+            "detalhes_tecnicos": metadados,
+            "transcricao": texto_transcrito,
+            "corte_sugerido": corte_sugerido
+        }
+        
+    except Exception as e:
+        print(f"❌ [Erro Processamento YT]: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

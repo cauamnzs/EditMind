@@ -1,5 +1,5 @@
 // ==========================================
-// CONFIGURAÇÃO DO SERVIDOR (Atrito Zero)
+// CONFIGURAÇÃO DO SERVIDOR
 // ==========================================
 const API_BASE_URL = 'https://shelley-filar-alona.ngrok-free.dev';
 
@@ -23,7 +23,6 @@ const corteInicio = document.getElementById('corte-inicio');
 const corteFim = document.getElementById('corte-fim');
 const corteMotivo = document.getElementById('corte-motivo');
 
-// Variável global para segurar o resultado da IA até o clique do botão
 window.ultimoResultadoIA = null;
 
 // --- LÓGICA DE DRAG & DROP ---
@@ -42,7 +41,7 @@ window.ultimoResultadoIA = null;
 areaSoltar.addEventListener('drop', e => processarArquivos(e.dataTransfer.files));
 entradaArquivo.addEventListener('change', e => processarArquivos(e.target.files));
 
-// --- PROCESSAMENTO DO VÍDEO (UPLOAD LOCAL) ---
+// --- 1. PROCESSAMENTO DO VÍDEO (UPLOAD LOCAL) ---
 async function processarArquivos(arquivos) {
     if (arquivos.length === 0) return;
     const arquivo = arquivos[0];
@@ -79,7 +78,6 @@ async function processarArquivos(arquivos) {
 
             barraProgresso.style.width = '100%';
             porcentagemTexto.textContent = '100%';
-            
             window.ultimoResultadoIA = resultado; 
             
             mensagemTexto.innerHTML = `
@@ -98,44 +96,84 @@ async function processarArquivos(arquivos) {
     }
 }
 
-// --- NAVEGAÇÃO E IA ---
-window.acionarTelaIA = function() {
-    if (window.ultimoResultadoIA) mostrarResultadosIA(window.ultimoResultadoIA);
-}
+// --- 2. PROCESSAMENTO DIRETO PELO LINK DO YOUTUBE ---
+window.processarLinkYoutubePrincipal = async function() {
+    const inputLink = document.getElementById('input-yt-principal');
+    const btnYt = document.getElementById('btn-yt-principal');
+    const link = inputLink.value.trim();
 
-function mostrarResultadosIA(resultado) {
-    painelUpload.classList.add('hidden');
-    painelUpload.classList.remove('grid');
-    painelIa.classList.remove('hidden');
-    painelIa.classList.add('grid');
-    setTimeout(() => { painelIa.classList.remove('opacity-0'); }, 50);
-
-    textoTranscricao.textContent = resultado.transcricao || "Sem transcrição disponível.";
-    if(resultado.corte_sugerido) {
-        corteInicio.textContent = resultado.corte_sugerido.inicio || "00:00";
-        corteFim.textContent = resultado.corte_sugerido.fim || "00:00";
-        corteMotivo.textContent = `"${resultado.corte_sugerido.motivo}"` || "Sem motivo.";
+    if (!link || (!link.includes('youtube.com') && !link.includes('youtu.be'))) {
+        alert("Ops! Insira um link válido do YouTube.");
+        return;
     }
-}
 
-window.resetarNovoCorte = function() {
-    painelIa.classList.add('opacity-0');
-    setTimeout(() => {
-        painelIa.classList.add('hidden');
-        painelIa.classList.remove('grid');
-        barraProgresso.style.width = '0%';
-        porcentagemTexto.textContent = '0%';
-        nomeArquivoTexto.textContent = 'Aguardando feed...';
-        mensagemTexto.innerHTML = 'Motor Python em Standby.';
-        mensagemTexto.classList.replace('text-red-500', 'text-gray-500');
-        metaRes.textContent = '—'; metaFps.textContent = '—'; metaDuracao.textContent = '—';
-        painelUpload.classList.remove('hidden');
-        painelUpload.classList.add('grid');
-        window.ultimoResultadoIA = null;
-    }, 500);
-}
+    // 1. Muda a interface para o modo de carregamento
+    btnYt.disabled = true;
+    btnYt.innerHTML = "...";
+    btnYt.classList.add('opacity-50', 'cursor-not-allowed');
+    
+    nomeArquivoTexto.textContent = "Puxando vídeo da nuvem...";
+    mensagemTexto.textContent = 'Extraindo áudio e acionando IA...';
+    mensagemTexto.classList.remove('text-red-500');
+    mensagemTexto.classList.add('text-gray-500');
+    barraProgresso.style.width = '30%';
+    porcentagemTexto.textContent = '30%';
 
-// --- YOUTUBE DOWNLOADER (ESTILIZADO E ANIMADO) ---
+    try {
+        const resposta = await fetch(`${API_BASE_URL}/api/processar-youtube`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true'
+            },
+            body: JSON.stringify({ url: link })
+        });
+
+        const resultado = await resposta.json();
+
+        if (resposta.ok) {
+            // Sucesso! A IA terminou
+            barraProgresso.style.width = '100%';
+            porcentagemTexto.textContent = '100%';
+            
+            const infos = resultado.detalhes_tecnicos || {};
+            metaRes.textContent = infos.resolucao || 'N/A';
+            metaFps.textContent = infos.fps ? `${infos.fps} FPS` : 'N/A';
+            metaDuracao.textContent = infos.duracao_segundos ? `${infos.duracao_segundos}s` : 'N/A';
+            
+            window.ultimoResultadoIA = resultado; 
+            
+            mensagemTexto.innerHTML = `
+                <button onclick="acionarTelaIA()" class="mt-4 bg-[#f97316] hover:bg-white hover:text-[#f97316] text-white font-black py-4 px-10 rounded-full text-[10px] uppercase tracking-[0.2em] shadow-[0_15px_35px_rgba(249,115,22,0.4)] transition-all animate-pulse border-none cursor-pointer scale-110">
+                    Ver Relatório da IA ⚡
+                </button>
+            `;
+            
+            // Restaura o campo de input
+            inputLink.value = '';
+            btnYt.disabled = false;
+            btnYt.innerHTML = "Processar";
+            btnYt.classList.remove('opacity-50', 'cursor-not-allowed');
+            
+        } else {
+            throw new Error(resultado.detail || 'Falha desconhecida no backend.');
+        }
+    } catch (erro) {
+        console.error("Erro capturado no JS:", erro);
+        mensagemTexto.textContent = "Erro: " + erro.message;
+        mensagemTexto.classList.replace('text-gray-500', 'text-red-500');
+        barraProgresso.classList.replace('bg-[#f97316]', 'bg-red-500');
+        setTimeout(() => { 
+            barraProgresso.style.width = '0%'; 
+            porcentagemTexto.textContent = '0%'; 
+        }, 3000);
+        
+        btnYt.disabled = false;
+        btnYt.innerHTML = "Falhou";
+        btnYt.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+};
+
 async function baixarYouTube() {
     const inputLink = document.getElementById('input-youtube');
     const btn = document.getElementById('btn-youtube');
@@ -206,6 +244,44 @@ async function baixarYouTube() {
         btn.disabled = false;
         btn.innerHTML = `PUXAR PARA NUVEM`;
     }
+}
+
+
+// --- NAVEGAÇÃO E IA ---
+window.acionarTelaIA = function() {
+    if (window.ultimoResultadoIA) mostrarResultadosIA(window.ultimoResultadoIA);
+}
+
+function mostrarResultadosIA(resultado) {
+    painelUpload.classList.add('hidden');
+    painelUpload.classList.remove('grid');
+    painelIa.classList.remove('hidden');
+    painelIa.classList.add('grid');
+    setTimeout(() => { painelIa.classList.remove('opacity-0'); }, 50);
+
+    textoTranscricao.textContent = resultado.transcricao || "Sem transcrição disponível.";
+    if(resultado.corte_sugerido) {
+        corteInicio.textContent = resultado.corte_sugerido.inicio || "00:00";
+        corteFim.textContent = resultado.corte_sugerido.fim || "00:00";
+        corteMotivo.textContent = `"${resultado.corte_sugerido.motivo}"` || "Sem motivo.";
+    }
+}
+
+window.resetarNovoCorte = function() {
+    painelIa.classList.add('opacity-0');
+    setTimeout(() => {
+        painelIa.classList.add('hidden');
+        painelIa.classList.remove('grid');
+        barraProgresso.style.width = '0%';
+        porcentagemTexto.textContent = '0%';
+        nomeArquivoTexto.textContent = 'Aguardando feed...';
+        mensagemTexto.innerHTML = 'Motor Python em Standby.';
+        mensagemTexto.classList.replace('text-red-500', 'text-gray-500');
+        metaRes.textContent = '—'; metaFps.textContent = '—'; metaDuracao.textContent = '—';
+        painelUpload.classList.remove('hidden');
+        painelUpload.classList.add('grid');
+        window.ultimoResultadoIA = null;
+    }, 500);
 }
 
 // --- CONTROLE DE ABAS ---
