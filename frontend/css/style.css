@@ -5,26 +5,225 @@ body {
 }
 
 .glass-panel {
-    background: rgba(26, 29, 38, 0.4);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(26, 29, 38, 0.45);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
 .orange-glow {
-    box-shadow: 0 0 40px rgba(249, 115, 22, 0.15);
+    box-shadow: 0 0 50px rgba(249, 115, 22, 0.12), 0 0 100px rgba(249, 115, 22, 0.05);
 }
 
 .bento-card {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .bento-card:hover {
-    border-color: rgba(249, 115, 22, 0.5);
-    background: rgba(249, 115, 22, 0.02);
-    transform: translateY(-4px);
+    border-color: rgba(249, 115, 22, 0.4);
+    background: rgba(249, 115, 22, 0.03);
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(249,115,22,0.08);
 }
 
-/* Animações do Dock Flutuante */
+/* ========================================== */
+/* AI SCAN — ANIMAÇÃO DE PROCESSAMENTO        */
+/* ========================================== */
+@keyframes ai-scan-line {
+    0%   { top: 0%; opacity: 1; }
+    90%  { top: 100%; opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+@keyframes ai-pulse-ring {
+    0%   { transform: scale(0.8); opacity: 1; }
+    100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes ai-brain-glow {
+    0%, 100% { filter: drop-shadow(0 0 8px rgba(249,115,22,0.6)); }
+    50%       { filter: drop-shadow(0 0 24px rgba(249,115,22,1)) drop-shadow(0 0 40px rgba(249,115,22,0.4)); }
+}
+@keyframes shimmer-scan {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+@keyframes float-particle {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0.6; }
+    50%       { transform: translateY(-12px) scale(1.3); opacity: 1; }
+}
+
+.ai-scanning .upload-icon {
+    animation: ai-brain-glow 1.2s ease-in-out infinite;
+}
+.ai-scan-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: inherit;
+    z-index: 5;
+}
+.ai-scan-overlay::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #f97316, #fbbf24, #f97316, transparent);
+    box-shadow: 0 0 20px rgba(249,115,22,0.8);
+    animation: ai-scan-line 1.8s ease-in-out infinite;
+}
+.ai-scan-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        135deg,
+        transparent 25%,
+        rgba(249,115,22,0.04) 50%,
+        transparent 75%
+    );
+    background-size: 200% 200%;
+    animation: shimmer-scan 2s linear infinite;
+}
+
+.ai-pulse-dot {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.ai-pulse-dot::before,
+.ai-pulse-dot::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(249, 115, 22, 0.4);
+    animation: ai-pulse-ring 1.5s ease-out infinite;
+}
+.ai-pulse-dot::after {
+    animation-delay: 0.5s;
+}
+
+.ai-particle {
+    animation: float-particle 2s ease-in-out infinite;
+}
+.ai-particle:nth-child(2) { animation-delay: 0.3s; }
+.ai-particle:nth-child(3) { animation-delay: 0.6s; }
+.ai-particle:nth-child(4) { animation-delay: 0.9s; }
+
+/* Texto de status com shimmer */
+.ai-status-text {
+    background: linear-gradient(90deg, #f97316, #fbbf24, #f97316);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer-scan 2s linear infinite;
+}
+
+/* ========================================== */
+/* VIRAL SCORE — GRADIENTE NEON DINÂMICO      */
+/* ========================================== */
+.viral-score-badge {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.05em;
+}
+.viral-score-high   { color: #22c55e; text-shadow: 0 0 20px rgba(34,197,94,0.6), 0 0 40px rgba(34,197,94,0.3); }
+.viral-score-mid    { color: #f97316; text-shadow: 0 0 20px rgba(249,115,22,0.6), 0 0 40px rgba(249,115,22,0.3); }
+.viral-score-low    { color: #ef4444; text-shadow: 0 0 20px rgba(239,68,68,0.5); }
+
+.viral-bar-high  { background: linear-gradient(90deg, #16a34a, #22c55e, #4ade80); }
+.viral-bar-mid   { background: linear-gradient(90deg, #ea580c, #f97316, #fbbf24); }
+.viral-bar-low   { background: linear-gradient(90deg, #dc2626, #ef4444); }
+
+/* ========================================== */
+/* ESTILOS DE LEGENDA — 3 TEMAS               */
+/* ========================================== */
+
+/* Tema: Bold Neon (padrão) */
+body.subtitle-bold-neon video::cue,
+video::cue {
+    background-color: transparent;
+    color: #f97316;
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: 1.9em;
+    text-shadow:
+        2px 2px 0 #000,
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000,
+        0 0 20px rgba(249,115,22,0.8);
+}
+
+/* Tema: Classic White */
+body.subtitle-classic-white video::cue {
+    background-color: rgba(0, 0, 0, 0.65);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1.6em;
+    text-shadow: none;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+/* Tema: Impact Yellow */
+body.subtitle-impact-yellow video::cue {
+    background-color: transparent;
+    color: #facc15;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-weight: 900;
+    font-size: 2.2em;
+    text-shadow:
+        3px 3px 0 #000,
+        -3px -3px 0 #000,
+        3px -3px 0 #000,
+        -3px 3px 0 #000,
+        0 6px 15px rgba(0,0,0,0.9);
+    letter-spacing: 0.02em;
+}
+
+/* ========================================== */
+/* SMART FOCUS PREVIEW — PLAYER LIVE CROP     */
+/* ========================================== */
+#player-vertical {
+    object-fit: cover;
+    object-position: center center;
+    transition: object-position 0.2s ease-out;
+}
+
+/* Seletor de estilo de legenda */
+.subtitle-style-btn {
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: #9ca3af;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.subtitle-style-btn:hover {
+    border-color: rgba(249,115,22,0.4);
+    color: #f97316;
+}
+.subtitle-style-btn.active {
+    background: rgba(249,115,22,0.15);
+    border-color: rgba(249,115,22,0.6);
+    color: #f97316;
+    box-shadow: 0 0 12px rgba(249,115,22,0.2);
+}
+
+/* ========================================== */
+/* DOCK / NAV                                  */
+/* ========================================== */
 .nav-item {
     transition: all 0.3s ease;
 }
@@ -36,8 +235,6 @@ body {
     transform: scale(0);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-/* Estado Ativo no Dock */
 .nav-item.active {
     color: #f97316;
 }
@@ -56,7 +253,9 @@ body {
     box-shadow: 0 0 12px #f97316;
 }
 
-/* Transição Suave entre Abas */
+/* ========================================== */
+/* TRANSIÇÕES DE ABA                          */
+/* ========================================== */
 .view-section {
     display: none;
     opacity: 0;
@@ -75,20 +274,84 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: #f97316; }
 
 /* ========================================== */
-/* ESTILO DA LEGENDA NATIVA DO PLAYER (CUES)  */
+/* MÓDULO #8 — TEMPLATES DE LEGENDA           */
 /* ========================================== */
-video::cue {
-    background-color: transparent;
-    color: #fbd38d; /* Um amarelo/laranja suave */
-    font-family: 'Inter', sans-serif;
+
+/* Container de preview de legenda sobre o vídeo */
+.legenda-overlay {
+    position: absolute;
+    bottom: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    text-align: center;
+    pointer-events: none;
+    z-index: 10;
+    min-height: 2.5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px 6px;
+    padding: 0 8px;
+}
+
+/* Palavra base */
+.legenda-palavra {
+    display: inline-block;
+    font-size: clamp(14px, 3.5vw, 22px);
     font-weight: 900;
-    font-size: 1.8rem;
-    /* Borda preta grossa para leitura em qualquer fundo */
-    text-shadow: 
-        3px 3px 0 #000, 
-        -3px -3px 0 #000, 
-        3px -3px 0 #000, 
-        -3px 3px 0 #000,
-        0px 4px 10px rgba(0,0,0,0.8);
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    transition: all 0.08s ease;
+}
+
+/* ── ESTILO HORMOZI ── */
+.legenda-hormozi .legenda-palavra {
+    color: #ffffff;
+    text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+}
+.legenda-hormozi .legenda-palavra.ativa {
+    color: #f97316;
+    background: rgba(249,115,22,0.15);
+    border-radius: 4px;
+    padding: 0 4px;
+    text-shadow: 0 0 20px rgba(249,115,22,0.8), 2px 2px 0 #000;
+    transform: scale(1.08);
+}
+
+/* ── ESTILO MRBEAST ── */
+.legenda-mrbeast .legenda-palavra {
+    color: transparent;
+    opacity: 0;
+    font-size: clamp(16px, 4vw, 26px);
+    transition: opacity 0.06s;
+}
+.legenda-mrbeast .legenda-palavra.ativa {
+    color: #ffffff;
+    opacity: 1;
+    -webkit-text-stroke: 2px #000;
+    text-shadow: 3px 3px 0 #000, -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000,
+                 0 0 30px rgba(255,255,255,0.4);
+    transform: scale(1.12);
+}
+
+/* Botões de seleção de template */
+.template-btn {
+    cursor: pointer;
+    border: 2px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 10px 16px;
+    transition: all 0.2s ease;
+    background: rgba(255,255,255,0.03);
+}
+.template-btn:hover {
+    border-color: rgba(249,115,22,0.5);
+    background: rgba(249,115,22,0.06);
+}
+.template-btn.selecionado {
+    border-color: #f97316;
+    background: rgba(249,115,22,0.1);
+    box-shadow: 0 0 16px rgba(249,115,22,0.2);
 }
 

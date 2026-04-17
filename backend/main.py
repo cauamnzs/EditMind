@@ -1,37 +1,82 @@
+"""
+EditMind API - FastAPI Application
+Arquitetura otimizada para alta performance
+"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 import os
-from database import engine, Base
+import logging
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
+    datefmt="%H:%M:%S",
+)
+
+# Database
+from database import engine, Base
 Base.metadata.create_all(bind=engine) 
 
-# Importando as Rotas (AGORA COM TODAS AS PEÇAS DO EXODIA)
-from routes import upload_routes, ai_routes
+# Rotas
+from routes import upload_routes, ai_routes, auth_routes, sse_routes
 
-app = FastAPI(title="EditMind API")
+# ==========================================
+# APP CONFIGURATION
+# ==========================================
+app = FastAPI(
+    title="EditMind API",
+    description="API para automação de cortes virais de vídeos com IA",
+    version="1.0.0"
+)
 
-# 1º - PERMISSÃO DE CORS VEM PRIMEIRO! (Absolutamente crucial)
+# CORS - Crucial para frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# 2º - MONTAR AS PASTAS DEPOIS DO CORS! (Para os vídeos herdarem a permissão)
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-# Configuração de Pastas (Garante que tudo exista)
+# ==========================================
+# STATIC FILES
+# ==========================================
+# Configuração de Pastas
 os.makedirs("uploads/videos", exist_ok=True)
 os.makedirs("uploads/audios", exist_ok=True)
-os.makedirs("uploads/cortes", exist_ok=True) 
+os.makedirs("uploads/cortes", exist_ok=True)
+os.makedirs("uploads/temp_clips", exist_ok=True)
+os.makedirs("uploads/broll", exist_ok=True)
 
-# Plugando as Rotas no Servidor
+# Monta pastas de uploads (DEPOIS do CORS)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+# ==========================================
+# ROUTES
+# ==========================================
+app.include_router(auth_routes.router)
 app.include_router(upload_routes.router)
-app.include_router(ai_routes.router)     
+app.include_router(ai_routes.router)
+app.include_router(sse_routes.router)
 
+# ==========================================
+# ROOT ENDPOINT
+# ==========================================
 @app.get("/")
 def root():
-    return {"mensagem": "EditMind rodando 100% com Arquitetura Limpa e Motor Turbo!"}
+    return {
+        "mensagem": "EditMind API rodando",
+        "versao": "1.0.0",
+        "status": "online",
+        "docs": "/docs"
+    }
+
+@app.get("/api/health")
+def health_check():
+    """Health check endpoint."""
+    return {
+        "status": "healthy",
+        "timestamp": str(os.times())
+    }

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EditMind - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="text-gray-100 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="w-full flex justify-center md:justify-start items-center px-6 md:px-12 py-8 z-20">
+        <a href="index.html" class="no-underline hover:scale-105 transition-transform">
+            <h1 class="text-3xl md:text-4xl font-extrabold italic tracking-tighter text-white">
+                EDIT<span class="text-[#f97316] drop-shadow-[0_0_15px_rgba(249,115,22,0.5)]">MIND</span>
+            </h1>
+        </a>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1 flex items-center justify-center px-4 py-8">
+        <div class="w-full max-w-md">
+            
+            <!-- Card de Login -->
+            <div class="glass-panel rounded-[2rem] md:rounded-[3rem] p-8 md:p-12 border border-gray-800">
+                
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight mb-2">
+                        Bem-vindo de volta
+                    </h2>
+                    <p class="text-gray-500 text-sm">
+                        Entre para acessar seus projetos
+                    </p>
+                </div>
+
+                <!-- Formulário -->
+                <form id="form-login" class="space-y-5">
+                    
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-[10px] md:text-xs font-black text-gray-500 uppercase tracking-widest mb-2">
+                            Email
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
+                                </svg>
+                            </div>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                placeholder="seu@email.com"
+                                class="w-full bg-[#0b0d11]/80 border border-gray-800 rounded-xl md:rounded-2xl pl-12 pr-4 py-4 text-sm text-white focus:border-[#f97316]/50 focus:shadow-[0_0_15px_rgba(249,115,22,0.1)] outline-none transition-all placeholder-gray-600"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Senha -->
+                    <div>
+                        <label class="block text-[10px] md:text-xs font-black text-gray-500 uppercase tracking-widest mb-2">
+                            Senha
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                            </div>
+                            <input 
+                                type="password" 
+                                id="senha" 
+                                placeholder="••••••••"
+                                class="w-full bg-[#0b0d11]/80 border border-gray-800 rounded-xl md:rounded-2xl pl-12 pr-4 py-4 text-sm text-white focus:border-[#f97316]/50 focus:shadow-[0_0_15px_rgba(249,115,22,0.1)] outline-none transition-all placeholder-gray-600"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Esqueci senha -->
+                    <div class="flex justify-end">
+                        <a href="#" class="text-[10px] text-gray-500 hover:text-[#f97316] transition-colors font-semibold">
+                            Esqueceu a senha?
+                        </a>
+                    </div>
+
+                    <!-- Botão -->
+                    <button 
+                        type="submit" 
+                        id="btn-login"
+                        class="w-full bg-[#f97316] hover:bg-[#ea580c] text-white font-black py-4 rounded-xl md:rounded-2xl text-sm uppercase tracking-widest shadow-[0_15px_30px_rgba(249,115,22,0.3)] transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                        Entrar
+                    </button>
+
+                    <!-- Erro -->
+                    <div id="mensagem-erro" class="hidden text-center">
+                        <p class="text-red-500 text-xs font-semibold"></p>
+                    </div>
+                </form>
+
+                <!-- Divider -->
+                <div class="flex items-center my-6">
+                    <div class="flex-1 border-t border-gray-800"></div>
+                    <span class="px-4 text-[10px] text-gray-500 font-bold uppercase">ou</span>
+                    <div class="flex-1 border-t border-gray-800"></div>
+                </div>
+
+                    <!-- Botão Login Dev (Apenas para testes) -->
+                    <button 
+                        type="button" 
+                        onclick="Auth.loginDev()"
+                        class="w-full mt-4 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white font-bold py-3 rounded-xl text-xs uppercase tracking-widest transition-all border border-gray-700"
+                    >
+                        ⚡ Login Dev (Testes)
+                    </button>
+
+                    <!-- Link Cadastro -->
+                    <p class="text-center text-gray-500 text-sm mt-4">
+                        Não tem uma conta? 
+                        <a href="cadastro.html" class="text-[#f97316] hover:text-[#ea580c] font-bold transition-colors">
+                            Criar conta
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full text-center py-6 border-t border-gray-800/50">
+        <p class="text-xs font-semibold text-gray-600 tracking-widest uppercase">
+            EditMind © 2026
+        </p>
+    </footer>
+
+    <script src="js/auth.js"></script>
+    <script>
+        document.getElementById('form-login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-login');
+            const erroDiv = document.getElementById('mensagem-erro');
+            
+            btn.disabled = true;
+            btn.textContent = 'Entrando...';
+            erroDiv.classList.add('hidden');
+
+            const resultado = await Auth.login(
+                document.getElementById('email').value,
+                document.getElementById('senha').value
+            );
+
+            if (resultado.sucesso) {
+                window.location.href = 'app.html';
+            } else {
+                erroDiv.querySelector('p').textContent = resultado.erro || 'Erro ao fazer login';
+                erroDiv.classList.remove('hidden');
+                btn.disabled = false;
+                btn.textContent = 'Entrar';
+            }
+        });
+    </script>
+</body>
+</html>

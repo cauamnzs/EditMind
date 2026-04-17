@@ -68,19 +68,23 @@
                 </div>
 
                 <div class="lg:col-span-5 grid grid-cols-2 gap-4 md:gap-5">
-                    <div id="status-envio" class="col-span-2 glass-panel p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] flex flex-col justify-between min-h-[140px] md:min-h-[160px]">
-                        <div class="flex justify-between items-start mb-4 md:mb-6">
-                            <span class="text-[9px] md:text-[10px] text-gray-500 uppercase font-black tracking-[0.2em]">Engine Status</span>
+                    <div id="status-envio" class="col-span-2 glass-panel p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] flex flex-col justify-between min-h-[140px] md:min-h-[160px] relative overflow-hidden">
+                        <div id="ai-scan-overlay-el" class="ai-scan-overlay hidden"></div>
+                        <div class="flex justify-between items-start mb-4 md:mb-6 relative z-10">
+                            <div class="flex items-center gap-2">
+                                <span id="status-label" class="text-[9px] md:text-[10px] text-gray-500 uppercase font-black tracking-[0.2em]">Pronto para Criar</span>
+                                <div id="ai-pulse-indicator" class="hidden ai-pulse-dot w-2 h-2 rounded-full bg-[#f97316]"></div>
+                            </div>
                             <span id="porcentagem-envio" class="text-3xl md:text-4xl font-black text-white">0%</span>
                         </div>
-                        <div>
+                        <div class="relative z-10">
                             <div class="flex justify-between text-[10px] md:text-xs mb-2 md:mb-3 font-semibold">
-                                <span id="nome-arquivo" class="text-gray-400 truncate w-full italic pr-2">Aguardando feed...</span>
+                                <span id="nome-arquivo" class="text-gray-400 truncate w-full italic pr-2">Solte seu vídeo aqui e a IA faz o resto...</span>
                             </div>
                             <div class="w-full bg-gray-900 rounded-full h-2 md:h-2.5 overflow-hidden shadow-inner">
                                 <div id="barra-progresso" class="bg-gradient-to-r from-[#f97316] to-yellow-500 h-full w-0 transition-all duration-500 shadow-[0_0_10px_#f97316]"></div>
                             </div>
-                            <p id="mensagem-envio" class="text-[9px] md:text-[11px] text-gray-500 mt-2 md:mt-3 italic text-center">Motor Python em Standby.</p>
+                            <p id="mensagem-envio" class="text-[9px] md:text-[11px] text-gray-500 mt-2 md:mt-3 italic text-center">IA em Standby. Aguardando seu vídeo.</p>
                         </div>
                     </div>
 
@@ -112,8 +116,8 @@
                 <div id="tela-galeria" class="flex flex-col w-full transition-all duration-500">
                     <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 md:mb-8 gap-4">
                         <div>
-                            <h3 class="text-2xl md:text-3xl font-black text-white tracking-tight">Cortes Encontrados ⚡</h3>
-                            <p class="text-gray-500 text-xs md:text-sm mt-1">Selecione um dos ganchos virais para abrir o estúdio de edição.</p>
+                            <h3 class="text-2xl md:text-3xl font-black text-white tracking-tight">🔥 Momentos Virais Detectados</h3>
+                            <p class="text-gray-500 text-xs md:text-sm mt-1">A IA escaneou seu vídeo e encontrou os melhores ganchos. Selecione para editar.</p>
                         </div>
                         <button onclick="resetarNovoCorte()" class="bg-black/50 border border-gray-800 hover:border-gray-500 text-gray-400 hover:text-white px-5 py-2.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all">
                             Descartar Lote
@@ -133,17 +137,29 @@
                         </button>
                         <div class="min-w-0">
                             <h3 id="editor-titulo" class="text-xl md:text-2xl font-black text-white tracking-tight truncate">Título do Corte</h3>
-                            <span id="editor-badge" class="bg-[#f97316]/20 text-[#f97316] text-[9px] md:text-[10px] font-black uppercase px-2 py-0.5 rounded-md border border-[#f97316]/30 mt-1 inline-block">Score: 90</span>
+                            <span id="editor-badge" class="bg-[#f97316]/20 text-[#f97316] text-[9px] md:text-[10px] font-black uppercase px-2 py-0.5 rounded-md border border-[#f97316]/30 mt-1 inline-block">⚡ Potencial Viral: 90</span>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10">
-                        <div class="lg:col-span-4 flex flex-col items-center">
+                        <div class="lg:col-span-4 flex flex-col items-center gap-4">
                             <div class="relative w-full max-w-[240px] md:max-w-[280px] aspect-[9/16] bg-black rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border-2 md:border-4 border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.5)] group">
                                 <video id="player-vertical" class="w-full h-full object-cover" controls playsinline muted crossorigin="anonymous"></video>
                                 <div class="absolute top-3 md:top-4 left-3 md:left-4 right-3 md:right-4 flex justify-between items-center pointer-events-none">
-                                    <span class="bg-black/60 backdrop-blur-md px-2 py-1 md:px-3 rounded-full text-[8px] md:text-[10px] font-bold text-white border border-white/10">PREVIEW</span>
+                                    <span class="bg-black/60 backdrop-blur-md px-2 py-1 md:px-3 rounded-full text-[8px] md:text-[10px] font-bold text-white border border-white/10">PREVIEW 9:16</span>
                                     <span id="editor-tempo" class="bg-red-500/80 backdrop-blur-md px-2 py-1 md:px-3 rounded-full text-[8px] md:text-[10px] font-bold text-white shadow-lg">00:00 - 00:00</span>
+                                </div>
+                                <div id="focus-guide" class="absolute inset-0 pointer-events-none hidden">
+                                    <div class="absolute top-0 bottom-0 w-0.5 bg-[#f97316]/60 shadow-[0_0_8px_#f97316]" id="focus-guide-line" style="left:50%"></div>
+                                </div>
+                            </div>
+                            <!-- Seletor de Estilo de Legenda -->
+                            <div class="w-full max-w-[280px]">
+                                <p class="text-[9px] text-gray-500 uppercase font-black tracking-widest mb-2 text-center">Estilo de Legenda</p>
+                                <div class="flex gap-2 justify-center flex-wrap">
+                                    <button class="subtitle-style-btn active" onclick="setSubtitleStyle('bold-neon', this)">Bold Neon</button>
+                                    <button class="subtitle-style-btn" onclick="setSubtitleStyle('classic-white', this)">Classic White</button>
+                                    <button class="subtitle-style-btn" onclick="setSubtitleStyle('impact-yellow', this)">Impact Yellow</button>
                                 </div>
                             </div>
                         </div>
@@ -151,29 +167,119 @@
                         <div class="lg:col-span-8 flex flex-col h-full gap-4 md:gap-6">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div class="bg-black/40 rounded-2xl p-4 md:p-5 border border-white/5">
-                                    <span class="text-[8px] md:text-[9px] text-gray-500 uppercase font-black tracking-widest block mb-2">🪝 O Gancho (Hook)</span>
+                                    <span class="text-[9px] md:text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-2">🪝 O Gancho (Hook)</span>
                                     <p id="editor-gancho" class="text-xs md:text-sm font-bold text-white leading-snug">...</p>
                                 </div>
                                 <div class="bg-black/40 rounded-2xl p-4 md:p-5 border border-white/5">
-                                    <span class="text-[8px] md:text-[9px] text-gray-500 uppercase font-black tracking-widest block mb-2">🧠 Por que viraliza?</span>
+                                    <span class="text-[9px] md:text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-2">🧠 Por que viraliza?</span>
                                     <p id="editor-motivo" class="text-[10px] md:text-xs text-gray-400 leading-relaxed">...</p>
                                 </div>
                             </div>
 
+                            <!-- SMART HEADLINE EDITÁVEL -->
+                            <div class="glass-panel rounded-2xl p-4 md:p-5 border border-gray-800">
+                                <label class="text-[9px] md:text-[10px] text-[#f97316] uppercase font-black tracking-widest block mb-2 flex items-center gap-2">
+                                    <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    📝 Smart Headline (Título no vídeo)
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="editor-headline" 
+                                    class="w-full bg-[#0b0d11]/80 border border-gray-800 rounded-xl px-4 py-3 text-white text-sm focus:border-[#f97316]/50 focus:shadow-[0_0_15px_rgba(249,115,22,0.1)] outline-none transition-all"
+                                    placeholder="Digite a headline que aparecerá no topo do vídeo..."
+                                >
+                                <p class="text-[10px] text-gray-500 mt-2">Esta frase será estampada no vídeo final usando drawtext</p>
+                            </div>
+
+                            <!-- SMART FOCUS - SLIDER DE ENQUADRAMENTO -->
+                            <div class="glass-panel rounded-2xl p-4 md:p-5 border border-gray-800">
+                                <div class="flex justify-between items-center mb-3">
+                                    <label class="text-[9px] md:text-[10px] text-[#f97316] uppercase font-black tracking-widest flex items-center gap-2">
+                                        <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                        🎯 Smart Focus (Posicionamento do Crop)
+                                    </label>
+                                    <span id="focus-valor" class="text-white font-bold text-sm">50%</span>
+                                </div>
+                                <div class="relative">
+                                    <input 
+                                        type="range" 
+                                        id="slider-focus" 
+                                        min="0" 
+                                        max="100" 
+                                        value="50"
+                                        class="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-[#f97316]"
+                                    >
+                                    <div class="flex justify-between text-[10px] text-gray-500 mt-1">
+                                        <span>← Esquerda</span>
+                                        <span>Centro</span>
+                                        <span>Direita →</span>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-gray-500 mt-2">O preview ao lado atualiza em tempo real conforme você arrasta</p>
+                            </div>
+
+                            <!-- FASE 2: JUMP CUT (Remoção de Silêncios) -->
+                            <div class="glass-panel rounded-2xl p-4 md:p-5 border border-gray-800">
+                                <div class="flex justify-between items-center mb-3">
+                                    <label class="text-[9px] md:text-[10px] text-[#f97316] uppercase font-black tracking-widest flex items-center gap-2">
+                                        <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                        ⚡ Jump Cut Inteligente
+                                    </label>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="chk-jump-cut" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#f97316]"></div>
+                                    </label>
+                                </div>
+                                <p class="text-[10px] text-gray-500">Remove automaticamente os silêncios e pausas do corte</p>
+                            </div>
+
+                            <!-- FASE 2: B-ROLL (Overlay de Imagem) -->
+                            <div class="glass-panel rounded-2xl p-4 md:p-5 border border-gray-800">
+                                <div class="flex justify-between items-center mb-3">
+                                    <label class="text-[9px] md:text-[10px] text-[#f97316] uppercase font-black tracking-widest flex items-center gap-2">
+                                        <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        🎨 B-Roll Inteligente
+                                    </label>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="chk-broll" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#f97316]"></div>
+                                    </label>
+                                </div>
+                                <input
+                                    type="text"
+                                    id="keyword-broll"
+                                    class="w-full bg-[#0b0d11]/80 border border-gray-800 rounded-xl px-3 py-2 text-white text-xs focus:border-[#f97316]/50 outline-none transition-all mt-2"
+                                    placeholder="Palavra-chave para imagem (ex: technology, business, food)..."
+                                >
+                                <p class="text-[10px] text-gray-500 mt-2">Busca imagem relacionada no Pexels e insere no corte</p>
+                            </div>
+
+                            <!-- TRANSCRIÇÃO EDITÁVEL (LEGENDAS) -->
                             <div class="flex-1 flex flex-col glass-panel rounded-2xl md:rounded-3xl p-4 md:p-6 border border-gray-800 min-h-[200px] md:min-h-[250px]">
                                 <div class="flex justify-between items-center mb-3 md:mb-4">
                                     <span class="text-[9px] md:text-[10px] text-[#f97316] uppercase font-black tracking-[0.2em] flex items-center gap-2">
-                                        <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                        Transcrição (Editável)
+                                        <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                        🎬 Transcrição Viva (Legendas Editáveis)
                                     </span>
+                                    <button onclick="Editor.atualizarLegendas()" class="text-[10px] bg-[#f97316]/20 hover:bg-[#f97316]/30 text-[#f97316] px-3 py-1 rounded-full font-bold transition-colors">
+                                        Sincronizar Legendas
+                                    </button>
                                 </div>
                                 <textarea id="editor-texto" class="w-full flex-1 bg-[#0b0d11]/80 border border-gray-800 rounded-xl md:rounded-2xl p-4 md:p-5 text-gray-300 text-xs md:text-sm focus:border-[#f97316]/50 focus:shadow-[0_0_15px_rgba(249,115,22,0.1)] outline-none resize-none leading-relaxed transition-all" placeholder="A transcrição deste trecho aparecerá aqui..."></textarea>
+                                <p class="text-[10px] text-gray-500 mt-2">Edite e clique "Sincronizar Legendas" para atualizar em tempo real</p>
                             </div>
 
-                            <div class="mt-2 md:mt-4 flex justify-end">
-                                <button class="bg-[#f97316] hover:bg-white hover:text-[#f97316] text-white font-black py-3 px-8 md:py-4 md:px-12 rounded-full text-[9px] md:text-[10px] uppercase tracking-[0.2em] shadow-[0_15px_30px_rgba(249,115,22,0.3)] transition-all transform hover:scale-105 w-full sm:w-auto">
-                                    Gerar Vídeo Final
+                            <!-- BOTÃO GERAR -->
+                            <div class="mt-2 md:mt-4 flex flex-col sm:flex-row gap-3 justify-end">
+                                <button onclick="Editor.gerarVideoFinal()" id="btn-gerar" class="bg-[#f97316] hover:bg-white hover:text-[#f97316] text-white font-black py-3 px-8 md:py-4 md:px-12 rounded-full text-[9px] md:text-[10px] uppercase tracking-[0.2em] shadow-[0_15px_30px_rgba(249,115,22,0.3)] transition-all transform hover:scale-105 w-full sm:w-auto flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path></svg>
+                                    ✨ Exportar Short Viral
                                 </button>
+                            </div>
+
+                            <!-- STATUS DE GERAÇÃO -->
+                            <div id="gerar-status" class="hidden text-center p-4 rounded-2xl">
+                                <p class="text-sm font-semibold"></p>
                             </div>
                         </div>
                     </div>
@@ -183,59 +289,59 @@
         </div>
 
         <div id="aba-conteudos" class="view-section w-full hidden">
-            <div class="mb-6 md:mb-10 text-center">
-                <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Meus Conteúdos</h2>
-                <p class="text-gray-500 text-xs md:text-sm mt-2">Sua esteira de cortes aprovados.</p>
-            </div>
-            <div class="glass-panel rounded-[2rem] md:rounded-[3rem] p-10 md:p-20 flex flex-col items-center justify-center text-center">
-                <div class="w-16 h-16 md:w-24 md:h-24 bg-gray-800/40 rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-inner">
-                    <svg class="w-8 h-8 md:w-10 md:h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            <div class="mb-6 md:mb-10 flex items-center justify-between">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Meus Conte&#250;dos</h2>
+                    <p class="text-gray-500 text-xs md:text-sm mt-2">Sua esteira de cortes aprovados.</p>
                 </div>
-                <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Vazio por aqui</h3>
-                <p class="text-gray-500 text-xs md:text-sm max-w-sm mb-6 md:mb-8">Nenhum lote foi processado. Inicie fazendo o upload do seu primeiro arquivo bruto.</p>
-                <button onclick="mudarAba('inicio')" class="px-6 py-2.5 md:px-8 md:py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-full text-[10px] md:text-xs tracking-widest uppercase transition-all border border-gray-700 hover:border-gray-500">Voltar ao Início</button>
+                <button onclick="carregarHistorico()" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 font-bold rounded-full text-[10px] uppercase tracking-widest border border-gray-700 hover:border-gray-500 transition-all">&#8635; Atualizar</button>
+            </div>
+            <div id="historico-loading" class="text-center py-16 text-gray-500 text-sm">Carregando projetos...</div>
+            <div id="historico-lista" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 hidden"></div>
+            <div id="historico-vazio" class="glass-panel rounded-[2rem] p-10 flex flex-col items-center justify-center text-center hidden">
+                <div class="w-16 h-16 bg-gray-800/40 rounded-full flex items-center justify-center mb-4 shadow-inner">
+                    <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Vazio por aqui</h3>
+                <p class="text-gray-500 text-xs max-w-sm mb-6">Nenhum projeto processado ainda.</p>
+                <button onclick="mudarAba('inicio')" class="px-6 py-2.5 bg-white/5 hover:bg-white/10 text-white font-bold rounded-full text-[10px] uppercase tracking-widest border border-gray-700 hover:border-gray-500 transition-all">Voltar ao In&#237;cio</button>
             </div>
         </div>
 
         <div id="aba-ferramentas" class="view-section w-full hidden">
             <div class="mb-6 md:mb-10 text-center">
                 <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Ferramentas Extras</h2>
-                <p class="text-gray-500 text-xs md:text-sm mt-2">Utilitários de alta performance para criadores.</p>
+                <p class="text-gray-500 text-xs md:text-sm mt-2">Utilit&#225;rios de alta performance para criadores.</p>
             </div>
-            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 <div class="glass-panel rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 bento-card relative overflow-hidden group">
                     <div class="absolute -right-16 -top-16 w-40 h-40 md:w-56 md:h-56 bg-red-600/10 rounded-full blur-[50px] group-hover:bg-red-600/20 transition-all duration-700"></div>
-                    
                     <div class="flex items-center mb-6 md:mb-8 relative z-10">
                         <div class="w-12 h-12 md:w-14 md:h-14 bg-red-500/10 rounded-xl md:rounded-2xl flex items-center justify-center mr-4 md:mr-5 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
                             <svg class="w-6 h-6 md:w-7 md:h-7 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
                         </div>
                         <div>
                             <h3 class="text-xl md:text-2xl font-bold text-white tracking-tight">YT Downloader</h3>
-                            <p class="text-[10px] md:text-xs text-gray-500 font-medium">Extração direta em 1080p</p>
+                            <p class="text-[10px] md:text-xs text-gray-500 font-medium">Extra&#231;&#227;o direta em 1080p</p>
                         </div>
                     </div>
-                    
                     <div class="relative z-10">
-                        <label class="block text-[9px] md:text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2 md:mb-3">URL do Vídeo</label>
+                        <label class="block text-[9px] md:text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-2 md:mb-3">URL do V&#237;deo</label>
                         <input type="text" id="input-youtube" placeholder="https://youtube.com/..." class="w-full bg-[#0b0d11]/80 border border-gray-800 rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 text-xs md:text-sm text-white focus:outline-none focus:border-red-500/50 transition-colors mb-4 md:mb-5 shadow-inner">
-                        
                         <button onclick="baixarYouTube()" id="btn-youtube" class="w-full bg-white/5 hover:bg-red-600 text-gray-300 hover:text-white font-bold py-3 md:py-4 rounded-xl md:rounded-2xl text-xs md:text-sm transition-all flex items-center justify-center border border-gray-700 hover:border-red-500 shadow-lg hover:shadow-[0_0_20px_rgba(239,68,68,0.4)]">
                             <svg class="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             Puxar para Nuvem
                         </button>
                     </div>
                 </div>
-
                 <div class="glass-panel rounded-[2rem] md:rounded-[2.5rem] border border-gray-800 border-dashed p-6 md:p-8 flex flex-col items-center justify-center opacity-40 min-h-[200px]">
                     <svg class="w-8 h-8 md:w-10 md:h-10 text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                    <p class="text-[10px] md:text-xs font-black tracking-widest uppercase text-gray-500 text-center">Módulo em Construção</p>
+                    <p class="text-[10px] md:text-xs font-black tracking-widest uppercase text-gray-500 text-center">M&#243;dulo em Constru&#231;&#227;o</p>
                 </div>
             </div>
         </div>
 
-        <div id="aba-configs" class="view-section w-full hidden">
+                <div id="aba-configs" class="view-section w-full hidden">
             <div class="mb-6 md:mb-10 text-center">
                 <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Parâmetros de Extração</h2>
                 <p class="text-gray-500 text-xs md:text-sm mt-2">Calibre o algoritmo da IA.</p>
@@ -281,6 +387,29 @@
         </div>
 
     </main>
+
+    <!-- MÓDULO #8: PAINEL DE TEMPLATES DE LEGENDA -->
+    <div id="painel-legenda" class="hidden fixed bottom-32 md:bottom-36 left-1/2 -translate-x-1/2 z-40 glass-panel rounded-2xl border border-gray-700/60 px-5 py-4 shadow-2xl w-[calc(100%-2rem)] max-w-md">
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Estilo de Legenda</span>
+            <button onclick="document.getElementById('painel-legenda').classList.add('hidden')" class="text-gray-600 hover:text-white text-lg leading-none">&times;</button>
+        </div>
+        <div class="flex gap-3">
+            <button id="tmpl-nenhum" onclick="selecionarTemplate('nenhum')" class="template-btn selecionado flex-1 text-center">
+                <div class="text-xs font-bold text-white mb-1">Sem Legenda</div>
+                <div class="text-[10px] text-gray-500">Off</div>
+            </button>
+            <button id="tmpl-hormozi" onclick="selecionarTemplate('hormozi')" class="template-btn flex-1 text-center">
+                <div class="text-xs font-bold text-[#f97316] mb-1">Hormozi</div>
+                <div class="text-[10px] text-gray-400">Highlight <span class="text-[#f97316]">laranja</span></div>
+            </button>
+            <button id="tmpl-mrbeast" onclick="selecionarTemplate('mrbeast')" class="template-btn flex-1 text-center">
+                <div class="text-xs font-bold text-white mb-1">MrBeast</div>
+                <div class="text-[10px] text-gray-400"><span class="font-black" style="-webkit-text-stroke:1px #000;text-shadow:1px 1px 0 #000">Palavra</span> por vez</div>
+            </button>
+        </div>
+        <p class="text-[9px] text-gray-600 mt-3 text-center">Preview em tempo real. Renderização final via FFmpeg drawtext.</p>
+    </div>
 
     <!-- Menu Inferior ajustado para Mobile -->
     <div class="fixed bottom-6 md:bottom-10 w-full md:w-auto md:left-1/2 md:-translate-x-1/2 px-4 md:px-0 z-50 flex justify-center">
