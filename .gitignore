@@ -1,13 +1,43 @@
-# Ambiente Virtual do Python
+# ==========================================
+# Ambientes Virtuais Python (NUNCA subir)
+# ==========================================
+.venv/
+venv/
 backend/venv/
-backend/__pycache__/
+backend/.venv/
 
-# Pastas de Upload (Não queremos subir vídeos pesados da nossa máquina local)
+# ==========================================
+# Cache Python
+# ==========================================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ==========================================
+# Variáveis de Ambiente (NUNCA subir chaves)
+# ==========================================
+.env
+.env.*
+*.env
+!.env.example
+
+# ==========================================
+# Banco de Dados local
+# ==========================================
+*.db
+*.sqlite
+*.sqlite3
+
+# ==========================================
+# Uploads e arquivos gerados
+# ==========================================
 backend/uploads/
+uploads/
 
-# Arquivos de sistema do Windows/Mac
+# ==========================================
+# Arquivos de sistema
+# ==========================================
 .DS_Store
 Thumbs.db
-
-backend/.env
-.env
+*.log

@@ -1,7 +1,34 @@
-fastapi
-uvicorn
-python-multipart
-yt-dlp
-pydantic
-openai-whisper
-python-dotenv
+# ==========================================
+# EditMind API Dependencies
+# ==========================================
+
+# Core Framework
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+python-multipart==0.0.17
+pydantic[email]==2.9.2
+
+# Database
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.11
+
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# AI & ML
+faster-whisper==1.1.0
+torch==2.5.1
+
+# Video Processing
+yt-dlp==2024.11.4
+
+# Utilities
+python-dotenv==1.0.1
+aiofiles==24.1.0
+
+# Performance
+httpx==0.28.0
+
+# HTTP Client para APIs externas
+requests==2.31.0
