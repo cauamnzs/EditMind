@@ -169,16 +169,33 @@ const AuthGuard = {
 };
 
 // ==========================================
-// INICIALIZAÇÃO
+// INICIALIZAÇÃO COM REDIRECIONAMENTO INTELIGENTE
 // ==========================================
 
-// Verifica auth em todas as páginas exceto login/cadastro
-document.addEventListener('DOMContentLoaded', () => {
-    const currentPage = window.location.pathname;
-    if (!currentPage.includes('login.html') && !currentPage.includes('cadastro.html')) {
-        AuthGuard.check();
-    }
-});
+// Whitelist de páginas públicas (não precisam de token)
+const PAGINAS_PUBLICAS = ['/login.html', '/cadastro.html', '/index.html', '/'];
+const paginaAtual = window.location.pathname;
+const isPaginaPublica = PAGINAS_PUBLICAS.some(page => paginaAtual.includes(page)) || 
+                        paginaAtual === '/' || 
+                        paginaAtual.endsWith('index.html');
+
+const token = localStorage.getItem('access_token');
+const temToken = token && token !== 'null' && token !== 'undefined';
+
+console.log('[Auth Init] Página:', paginaAtual);
+console.log('[Auth Init] Pública?', isPaginaPublica);
+console.log('[Auth Init] Token?', temToken ? 'SIM' : 'NÃO');
+
+// Lógica de redirecionamento
+if (!temToken && !isPaginaPublica) {
+    // Sem token em página protegida → manda pro login
+    console.log('[Auth] Sem token em rota protegida, redirecionando...');
+    window.location.replace('login.html');
+} else if (temToken && isPaginaPublica) {
+    // Tem token mas está em página pública → manda pro app
+    console.log('[Auth] Usuário logado, redirecionando para app...');
+    window.location.replace('app.html');
+}
 
 // Expõe globalmente
 window.Auth = Auth;

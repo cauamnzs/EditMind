@@ -299,11 +299,17 @@ window.abrirEditorCorte = function(index) {
         spinnerEl.id = 'preview-spinner';
         spinnerEl.className = 'absolute inset-0 flex flex-col items-center justify-center bg-black/75 z-20 rounded-2xl gap-2';
         spinnerEl.innerHTML = `
-            <svg class="animate-spin w-10 h-10 text-[#f97316]" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-            </svg>
-            <span class="text-[#f97316] text-xs font-bold">Cortando clipe...</span>`;
+            <div class="relative">
+                <div class="absolute inset-0 bg-[#f97316] blur-xl opacity-30 rounded-full"></div>
+                <svg class="animate-spin w-12 h-12 text-[#f97316] relative z-10" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+            </div>
+            <div class="text-center">
+                <span class="text-[#f97316] text-xs font-bold block">Gerando preview na GPU...</span>
+                <span class="text-gray-500 text-[10px] mt-1 block">Corte 9:16 com Smart Focus</span>
+            </div>`;
         if (playerWrapper) playerWrapper.appendChild(spinnerEl);
 
         const focusVal = parseInt(document.getElementById('slider-focus')?.value || '50');

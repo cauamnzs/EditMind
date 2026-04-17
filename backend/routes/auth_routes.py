@@ -11,7 +11,7 @@ import re
 
 # JWT
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+import bcrypt
 
 # Database
 from database import get_db_session, Usuario
@@ -26,7 +26,6 @@ SECRET_KEY = "editmind_secret_key_2026_change_in_production"  # MUDAR EM PRODUÇ
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_DAYS = 7
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 # ==========================================
@@ -56,13 +55,15 @@ class TokenResponse(BaseModel):
 # ==========================================
 
 def _hash_senha(senha: str) -> str:
-    # Passlib/bcrypt espera str — encoding interno é feito pelo passlib
-    # Truncamos em 72 chars (limite UTF-8 do bcrypt) antes de passar
-    return pwd_context.hash(senha[:72])
+    senha_bytes = senha.encode('utf-8')[:72]
+    salt = bcrypt.gensalt()
+    hash_bytes = bcrypt.hashpw(senha_bytes, salt)
+    return hash_bytes.decode('utf-8')
 
-def _verificar_senha(senha: str, hash: str) -> bool:
-    # Mesma truncagem aplicada na verificação para consistência
-    return pwd_context.verify(senha[:72], hash)
+def _verificar_senha(senha: str, hash_bd: str) -> bool:
+    senha_bytes = senha.encode('utf-8')[:72]
+    hash_bytes = hash_bd.encode('utf-8')
+    return bcrypt.checkpw(senha_bytes, hash_bytes)
 
 def _criar_token(user_id: str, email: str) -> str:
     """Gera JWT token."""

@@ -73,8 +73,8 @@ def _seg_para_ts(segundos: float) -> str:
 
 def _validar_e_corrigir_cortes(cortes: List[Dict]) -> List[Dict]:
     """
-    ValidaÃ§Ã£o pÃ³s-parse: corrige timestamps invÃ¡lidos e remove sobreposiÃ§Ãµes.
-    Esta camada Ã© a defesa contra alucinaÃ§Ãµes do LLM.
+    Validação pós-parse: corrige timestamps inválidos e remove sobreposições.
+    Esta camada é a defesa contra alucinações do LLM.
     """
     cortes_validos = []
 
@@ -85,24 +85,24 @@ def _validar_e_corrigir_cortes(cortes: List[Dict]) -> List[Dict]:
         inicio_seg = _ts_para_seg(inicio_raw)
         fim_seg = _ts_para_seg(fim_raw)
 
-        # Corrige timestamps com segundos >= 60 (alucinaÃ§Ã£o de formato)
+        # Corrige timestamps com segundos >= 60 (alucinação de formato)
         corte["inicio"] = _seg_para_ts(inicio_seg)
         corte["fim"] = _seg_para_ts(fim_seg)
 
-        # Descarta corte com duraÃ§Ã£o invÃ¡lida ou menor que 10 segundos
+        # Descarta corte com duração inválida ou menor que 10 segundos
         duracao = fim_seg - inicio_seg
         if duracao < 10:
-            print(f"âš ï¸ [LLM Validator] Corte descartado (duraÃ§Ã£o {duracao:.1f}s < 10s): '{corte.get('titulo')}'")
+            print(f" [LLM Validator] Corte descartado (duração {duracao:.1f}s < 10s): '{corte.get('titulo')}'")
             continue
 
-        # Verifica sobreposiÃ§Ã£o com cortes jÃ¡ aceitos
+        # Verifica sobreposição com cortes já aceitos
         sobreposicao = False
         for aceito in cortes_validos:
             aceito_inicio = _ts_para_seg(aceito["inicio"])
             aceito_fim = _ts_para_seg(aceito["fim"])
-            # SobreposiÃ§Ã£o se os intervalos se cruzam
+            # Sobreposição se os intervalos se cruzam
             if inicio_seg < aceito_fim and fim_seg > aceito_inicio:
-                print(f"âš ï¸ [LLM Validator] SobreposiÃ§Ã£o detectada: '{corte.get('titulo')}' overlaps '{aceito.get('titulo')}'")
+                print(f" [LLM Validator] Sobreposição detectada: '{corte.get('titulo')}' overlaps '{aceito.get('titulo')}'")
                 sobreposicao = True
                 break
 
@@ -113,68 +113,68 @@ def _validar_e_corrigir_cortes(cortes: List[Dict]) -> List[Dict]:
 
 
 def sugerir_cortes(transcricao: str) -> List[Dict]:
-    print("ðŸ§  [Brain Engine] Analisando transcriÃ§Ã£o para cortes virais...")
+    print(" [Brain Engine] Analisando transcrição para cortes virais...")
 
     if not transcricao or len(transcricao.strip()) < 50:
         return []
 
     prompt_sistema = """
-VocÃª Ã© o Brain Engine do EditMind, o algoritmo chefe de cortes virais para TikTok e Reels.
-Sua Ãºnica funÃ§Ã£o Ã© analisar transcriÃ§Ãµes e retornar os 3 melhores cortes cronologicamente distintos.
+Você é o Brain Engine do EditMind, o algoritmo chefe de cortes virais para TikTok e Reels.
+Sua única função é analisar transcrições e retornar os 3 melhores cortes cronologicamente distintos.
 
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-ðŸ”´ REGRAS ABSOLUTAS â€” VIOLÃ-LAS INVALIDA A RESPOSTA
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+═══════════════════════════════════════════════════════════════════
+🔴 REGRAS ABSOLUTAS — VIOLÁ-LAS INVALIDA A RESPOSTA
+═══════════════════════════════════════════════════════════════════
 
-REGRA 1 â€” EXCLUSIVIDADE CRONOLÃ“GICA (ANTI-OVERLAP):
-Os 3 cortes DEVEM ser cronologicamente separados. Os intervalos [inicio, fim] NÃƒO podem se sobrepor.
-Se o Corte 1 usa 00:10-00:40, os Cortes 2 e 3 DEVEM comeÃ§ar DEPOIS de 00:40.
-Pense no vÃ­deo como uma linha do tempo dividida em 3 zonas distintas: comeÃ§o, meio e fim.
+REGRA 1 — EXCLUSIVIDADE CRONOLÓGICA (ANTI-OVERLAP):
+Os 3 cortes DEVEM ser cronologicamente separados. Os intervalos [inicio, fim] NÃO podem se sobrepor.
+Se o Corte 1 usa 00:10-00:40, os Cortes 2 e 3 DEVEM começar DEPOIS de 00:40.
+Pense no vídeo como uma linha do tempo dividida em 3 zonas distintas: começo, meio e fim.
 
-REGRA 2 â€” FORMATO DE TEMPO ESTRITO (MM:SS):
-Os valores de "inicio" e "fim" devem estar no formato MM:SS onde SS Ã© sempre entre 00 e 59.
-Se um momento ocorre nos 65 segundos do vÃ­deo: escreva 01:05, NUNCA 00:65.
+REGRA 2 — FORMATO DE TEMPO ESTRITO (MM:SS):
+Os valores de "inicio" e "fim" devem estar no formato MM:SS onde SS é sempre entre 00 e 59.
+Se um momento ocorre nos 65 segundos do vídeo: escreva 01:05, NUNCA 00:65.
 Se um momento ocorre nos 90 segundos: escreva 01:30, NUNCA 00:90 ou 01:90.
 Regra de ouro: quando os segundos chegarem a 60, incremente o minuto.
 
-REGRA 3 â€” VARIEDADE DE GATILHOS EMOCIONAIS:
-Cada corte deve explorar um gatilho psicolÃ³gico DIFERENTE:
-- Corte 1 â†’ PATHOS: Apelo emocional, histÃ³ria pessoal, dor/desejo do espectador.
-- Corte 2 â†’ LOGOS: Dado surpreendente, insight contraintuitivo, prova lÃ³gica.
-- Corte 3 â†’ ETHOS: Autoridade, credibilidade, prova social ou resultado concreto.
-O campo "motivo" deve identificar explicitamente qual gatilho foi usado e por quÃª.
+REGRA 3 — VARIEDADE DE GATILHOS EMOCIONAIS:
+Cada corte deve explorar um gatilho psicológico DIFERENTE:
+- Corte 1 → PATHOS: Apelo emocional, história pessoal, dor/desejo do espectador.
+- Corte 2 → LOGOS: Dado surpreendente, insight contraintuitivo, prova lógica.
+- Corte 3 → ETHOS: Autoridade, credibilidade, prova social ou resultado concreto.
+O campo "motivo" deve identificar explicitamente qual gatilho foi usado e por quê.
 
-REGRA 4 â€” DURAÃ‡ÃƒO MÃNIMA E MÃXIMA:
-Cada corte deve ter duraÃ§Ã£o entre 15 e 90 segundos. Cortes fora desse range sÃ£o invÃ¡lidos.
+REGRA 4 — DURAÇÃO MÍNIMA E MÁXIMA:
+Cada corte deve ter duração entre 15 e 90 segundos. Cortes fora desse range são inválidos.
 
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-ðŸ“¦ FORMATO DE SAÃDA OBRIGATÃ“RIO
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+═══════════════════════════════════════════════════════════════════
+📦 FORMATO DE SAÍDA OBRIGATÓRIO
+═══════════════════════════════════════════════════════════════════
 
-Retorne APENAS um Array JSON vÃ¡lido. Sem markdown, sem explicaÃ§Ãµes, sem texto antes ou depois.
+Retorne APENAS um Array JSON válido. Sem markdown, sem explicações, sem texto antes ou depois.
 [
   {
-    "titulo": "TÃ­tulo curto e impactante (mÃ¡x 6 palavras)",
+    "titulo": "Título curto e impactante (máx 6 palavras)",
     "viral_score": 95,
     "inicio": "00:10",
     "fim": "00:45",
-    "gancho": "Frase exata dita nos primeiros 3 segundos que prende atenÃ§Ã£o",
-    "motivo": "PATHOS â€” Explica o gatilho emocional explorado e por que viraliza",
-    "texto_corte": "TranscriÃ§Ã£o exata e completa de todo o conteÃºdo falado neste trecho.",
+    "gancho": "Frase exata dita nos primeiros 3 segundos que prende atenção",
+    "motivo": "PATHOS — Explica o gatilho emocional explorado e por que viraliza",
+    "texto_corte": "Transcrição exata e completa de todo o conteúdo falado neste trecho.",
     "keyword_broll": "single_english_word"
   },
-  { ... Corte 2 com inicio APÃ“S o fim do Corte 1 ... },
-  { ... Corte 3 com inicio APÃ“S o fim do Corte 2 ... }
+  { ... Corte 2 com inicio APÓS o fim do Corte 1 ... },
+  { ... Corte 3 com inicio APÓS o fim do Corte 2 ... }
 ]
 
-O viral_score Ã© um inteiro de 70 a 99 baseado no potencial de viralizaÃ§Ã£o.
-A keyword_broll Ã© UMA palavra em inglÃªs (ex: money, success, gym, food).
+O viral_score é um inteiro de 70 a 99 baseado no potencial de viralização.
+A keyword_broll é UMA palavra em inglês (ex: money, success, gym, food).
 """
 
     conteudo_texto = _chamar_openrouter(
         mensagens=[
             {"role": "system", "content": prompt_sistema},
-            {"role": "user", "content": f"TranscriÃ§Ã£o para anÃ¡lise:\n\n{transcricao}"}
+            {"role": "user", "content": f"Transcrição para análise:\n\n{transcricao}"}
         ],
         temperature=0.3,
         max_tokens=4000,
@@ -187,14 +187,14 @@ A keyword_broll Ã© UMA palavra em inglÃªs (ex: money, success, gym, food).
         print(f"[Brain Engine] Resposta: {len(conteudo_texto)} chars")
         match = re.search(r'\[.*\]', conteudo_texto, re.DOTALL)
         if not match:
-            print("[Brain Engine] JSON Array nÃ£o encontrado")
+            print("[Brain Engine] JSON Array não encontrado")
             return []
         cortes_brutos = json.loads(match.group(0))
         cortes_validados = _validar_e_corrigir_cortes(cortes_brutos)
         print(f"[Brain Engine] {len(cortes_validados)}/{len(cortes_brutos)} cortes validados")
         return cortes_validados
     except json.JSONDecodeError as e:
-        print(f"[Brain Engine] JSON invÃ¡lido: {e}")
+        print(f"[Brain Engine] JSON inválido: {e}")
         return []
     except Exception as e:
         print(f"[Brain Engine] Erro: {e}")
@@ -204,9 +204,9 @@ A keyword_broll Ã© UMA palavra em inglÃªs (ex: money, success, gym, food).
 def _formatar_transcricao_timestamps(segmentos: List[Dict], limite_chars: int = 24000) -> str:
     """
     Converte segmentos Whisper [{start, end, text, words}] em texto formatado
-    para o LLM Editor Chefe. Usa word-level timestamps para mÃ¡xima precisÃ£o.
+    para o LLM Editor Chefe. Usa word-level timestamps para máxima precisão.
     Distribui o limite_chars proporcionalmente ao longo do vÃ­deo para nÃ£o
-    cortar sÃ³ o comeÃ§o em vÃ­deos longos.
+    cortar só o começo em vídeos longos.
     """
     linhas = []
     for seg in segmentos:
@@ -228,8 +228,8 @@ def _formatar_transcricao_timestamps(segmentos: List[Dict], limite_chars: int = 
     if len(resultado_completo) <= limite_chars:
         return resultado_completo
 
-    # Para vÃ­deos longos: amostra distribuÃ­da em 3 janelas (inÃ­cio, meio, fim)
-    # para cobrir todo o conteÃºdo, nÃ£o sÃ³ os primeiros minutos
+    # Para vídeos longos: amostra distribuída em 3 janelas (início, meio, fim)
+    # para cobrir todo o conteúdo, não só os primeiros minutos
     janela = limite_chars // 3
     total = len(resultado_completo)
     parte_inicio = resultado_completo[:janela]
@@ -256,54 +256,54 @@ def analisar_cortes_virais(
     Returns:
         Lista de dicts com estrutura completa de cada corte viral.
     """
-    print(f"ðŸŽ¬ [Brain Engine v2] Analisando {len(segmentos)} segmentos Whisper...")
+    print(f"🎬 [Brain Engine v2] Analisando {len(segmentos)} segmentos Whisper...")
 
     if not segmentos:
         return []
 
     transcricao_formatada = _formatar_transcricao_timestamps(segmentos)
 
-    # Calcula nÃºmero de cortes: 1 corte a cada ~90s de conteÃºdo (mÃ­n 3, mÃ¡x 12)
+    # Calcula número de cortes: 1 corte a cada ~90s de conteúdo (mín 3, máx 12)
     n_cortes = max(3, min(12, int(duracao_total // max(tempo_alvo * 1.5, 90))))
 
     prompt_sistema = f"""
-VocÃª Ã© o Editor Chefe SÃªnior do EditMind, especialista em retenÃ§Ã£o para TikTok, Reels e YouTube Shorts.
-Sua obsessÃ£o: eliminar tempo morto e criar mÃºltiplos vÃ­deos Ãºnicos e dinÃ¢micos a partir de um bruto.
+Você é o Editor Chefe Sênior do EditMind, especialista em retenção para TikTok, Reels e YouTube Shorts.
+Sua obsessão: eliminar tempo morto e criar múltiplos vídeos únicos e dinâmicos a partir de um bruto.
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 ðŸ”´ MISSÃƒO
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-A transcriÃ§Ã£o abaixo contÃ©m timestamps word-level no formato:
+A transcrição abaixo contém timestamps word-level no formato:
 [START-END] [tempo]palavra [tempo]palavra...
 
 Exemplo: [12.500-18.200] [12.5]Fala [12.9]galera, [13.4]hoje...
 
-VocÃª deve retornar EXATAMENTE {n_cortes} cortes virais Ãºnicos, cada um com:
+Você deve retornar EXATAMENTE {n_cortes} cortes virais únicos, cada um com:
 
-1. SEGMENTO BRUTO: os timestamps exatos de inÃ­cio e fim do trecho no vÃ­deo original (HH:MM:SS.mmm)
-2. SEGMENTS_TO_KEEP: lista de sub-segmentos dentro do trecho onde hÃ¡ fala Ãºtil.
-   - REMOVE silÃªncios > 0.3s
-   - REMOVE vÃ­cios de linguagem ("Ã©...", "tipo...", "nÃ©...", pausas longas)
+1. SEGMENTO BRUTO: os timestamps exatos de início e fim do trecho no vídeo original (HH:MM:SS.mmm)
+2. SEGMENTS_TO_KEEP: lista de sub-segmentos dentro do trecho onde há fala útil.
+   - REMOVE silêncios > 0.3s
+   - REMOVE vícios de linguagem ("é...", "tipo...", "né...", pausas longas)
    - REMOVE gaguejos (palavras repetidas como "eu eu eu")
-   - Cada entrada Ã© {{"start": float_segundos, "end": float_segundos}}
-   - Os valores sÃ£o em segundos absolutos do vÃ­deo ORIGINAL
+   - Cada entrada é {{"start": float_segundos, "end": float_segundos}}
+   - Os valores são em segundos absolutos do vídeo ORIGINAL
 3. SYNCED_TRANSCRIPT: legendas recalculadas para a timeline EDITADA do clipe.
-   - start_offset e end_offset sÃ£o relativos ao inÃ­cio do clipe (0.0 = primeiro frame do clipe)
-   - MÃ¡ximo 4 palavras por entrada para efeito karaoke
-   - Os offsets devem bater exatamente com a fala apÃ³s os cortes
+   - start_offset e end_offset são relativos ao início do clipe (0.0 = primeiro frame do clipe)
+   - Máximo 4 palavras por entrada para efeito karaoke
+   - Os offsets devem bater exatamente com a fala após os cortes
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 ðŸ”´ REGRAS ABSOLUTAS
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-REGRA 1 â€” EXCLUSIVIDADE: Nenhum corte pode sobrepor timestamps de outro.
-REGRA 2 â€” DURAÃ‡ÃƒO: Cada clipe editado (sum dos segments_to_keep) deve ter entre 15s e {min(90, tempo_alvo)}s.
-REGRA 3 â€” GANCHOS ÃšNICOS: Cada corte deve ter gancho emocional distinto (PATHOS/LOGOS/ETHOS).
-REGRA 4 â€” FORMATO DE TEMPO: Use float seconds (ex: 125.340) para segments_to_keep.
+REGRA 1 — EXCLUSIVIDADE: Nenhum corte pode sobrepor timestamps de outro.
+REGRA 2 — DURAÇÃO: Cada clipe editado (sum dos segments_to_keep) deve ter entre 15s e {min(90, tempo_alvo)}s.
+REGRA 3 — GANCHOS ÚNICOS: Cada corte deve ter gancho emocional distinto (PATHOS/LOGOS/ETHOS).
+REGRA 4 — FORMATO DE TEMPO: Use float seconds (ex: 125.340) para segments_to_keep.
            Use HH:MM:SS.mmm para raw_start/raw_end.
-REGRA 5 â€” VARIEDADE: Cada corte aborda um sub-tÃ³pico diferente do bruto.
+REGRA 5 — VARIEDADE: Cada corte aborda um sub-tópico diferente do bruto.
 
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 ðŸ“¦ FORMATO DE SAÃDA OBRIGATÃ“RIO (JSON puro, sem markdown)
@@ -312,10 +312,10 @@ REGRA 5 â€” VARIEDADE: Cada corte aborda um sub-tÃ³pico diferente do brut
 [
   {{
     "cut_id": 1,
-    "titulo": "TÃ­tulo impactante mÃ¡x 6 palavras",
+    "titulo": "Título impactante máx 6 palavras",
     "viral_score": 95,
-    "gancho": "Frase exata dos primeiros 3s que prende atenÃ§Ã£o",
-    "motivo": "PATHOS â€” por que viraliza",
+    "gancho": "Frase exata dos primeiros 3s que prende atenção",
+    "motivo": "PATHOS — por que viraliza",
     "keyword_broll": "single_english_word",
     "raw_start": "HH:MM:SS.mmm",
     "raw_end": "HH:MM:SS.mmm",

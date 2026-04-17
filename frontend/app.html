@@ -196,7 +196,7 @@
                                 <div class="flex justify-between items-center mb-3">
                                     <label class="text-[9px] md:text-[10px] text-[#f97316] uppercase font-black tracking-widest flex items-center gap-2">
                                         <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                        🎯 Smart Focus (Posicionamento do Crop)
+                                        🎯 Smart Focus 
                                     </label>
                                     <span id="focus-valor" class="text-white font-bold text-sm">50%</span>
                                 </div>
@@ -252,6 +252,29 @@
                                     placeholder="Palavra-chave para imagem (ex: technology, business, food)..."
                                 >
                                 <p class="text-[10px] text-gray-500 mt-2">Busca imagem relacionada no Pexels e insere no corte</p>
+                            </div>
+
+                            <!-- MÓDULO #8: TEMPLATES DE LEGENDA (INTEGRADO NO PAINEL) -->
+                            <div class="glass-panel rounded-2xl p-4 md:p-5 border border-gray-800">
+                                <div class="flex items-center justify-between mb-3">
+                                    <label class="text-[9px] md:text-[10px] text-[#f97316] uppercase font-black tracking-widest flex items-center gap-2">
+                                        <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"></path></svg>
+                                        📝 Estilo de Legenda
+                                    </label>
+                                    <span class="text-[10px] text-gray-500">Preview em tempo real</span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button id="tmpl-nenhum" onclick="selecionarTemplate('nenhum')" class="template-btn selecionado flex-1 text-center py-2">
+                                        <div class="text-xs font-bold text-white">Off</div>
+                                    </button>
+                                    <button id="tmpl-hormozi" onclick="selecionarTemplate('hormozi')" class="template-btn flex-1 text-center py-2">
+                                        <div class="text-xs font-bold text-[#f97316]">Hormozi</div>
+                                    </button>
+                                    <button id="tmpl-mrbeast" onclick="selecionarTemplate('mrbeast')" class="template-btn flex-1 text-center py-2">
+                                        <div class="text-xs font-bold text-white">MrBeast</div>
+                                    </button>
+                                </div>
+                                <p class="text-[9px] text-gray-600 mt-2 text-center">Renderização final via FFmpeg drawtext</p>
                             </div>
 
                             <!-- TRANSCRIÇÃO EDITÁVEL (LEGENDAS) -->
@@ -388,29 +411,6 @@
 
     </main>
 
-    <!-- MÓDULO #8: PAINEL DE TEMPLATES DE LEGENDA -->
-    <div id="painel-legenda" class="hidden fixed bottom-32 md:bottom-36 left-1/2 -translate-x-1/2 z-40 glass-panel rounded-2xl border border-gray-700/60 px-5 py-4 shadow-2xl w-[calc(100%-2rem)] max-w-md">
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[10px] font-black uppercase tracking-widest text-gray-400">Estilo de Legenda</span>
-            <button onclick="document.getElementById('painel-legenda').classList.add('hidden')" class="text-gray-600 hover:text-white text-lg leading-none">&times;</button>
-        </div>
-        <div class="flex gap-3">
-            <button id="tmpl-nenhum" onclick="selecionarTemplate('nenhum')" class="template-btn selecionado flex-1 text-center">
-                <div class="text-xs font-bold text-white mb-1">Sem Legenda</div>
-                <div class="text-[10px] text-gray-500">Off</div>
-            </button>
-            <button id="tmpl-hormozi" onclick="selecionarTemplate('hormozi')" class="template-btn flex-1 text-center">
-                <div class="text-xs font-bold text-[#f97316] mb-1">Hormozi</div>
-                <div class="text-[10px] text-gray-400">Highlight <span class="text-[#f97316]">laranja</span></div>
-            </button>
-            <button id="tmpl-mrbeast" onclick="selecionarTemplate('mrbeast')" class="template-btn flex-1 text-center">
-                <div class="text-xs font-bold text-white mb-1">MrBeast</div>
-                <div class="text-[10px] text-gray-400"><span class="font-black" style="-webkit-text-stroke:1px #000;text-shadow:1px 1px 0 #000">Palavra</span> por vez</div>
-            </button>
-        </div>
-        <p class="text-[9px] text-gray-600 mt-3 text-center">Preview em tempo real. Renderização final via FFmpeg drawtext.</p>
-    </div>
-
     <!-- Menu Inferior ajustado para Mobile -->
     <div class="fixed bottom-6 md:bottom-10 w-full md:w-auto md:left-1/2 md:-translate-x-1/2 px-4 md:px-0 z-50 flex justify-center">
         <nav class="glass-panel rounded-full md:rounded-[2rem] px-4 md:px-12 py-3 md:py-5 flex items-center justify-around md:justify-center gap-2 md:gap-14 shadow-[0_30px_60px_rgba(0,0,0,0.7)] border border-gray-700/50 w-full max-w-[400px] md:max-w-none">
@@ -446,8 +446,20 @@
         </nav>
     </div>
     
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/editor.js"></script> 
-    
+    <script src="js/editor.js"></script>
+    <script>
+        // Proteção de rota: verifica se tem token (auth.js já redirecionou se não tivesse)
+        // Mas garantimos aqui também para segurança extra
+        const token = localStorage.getItem('access_token');
+        if (!token || token === 'null' || token === 'undefined') {
+            console.log('[App] Sem token, redirecionando...');
+            window.location.replace('login.html');
+        } else {
+            console.log('[App] Token válido ✅');
+        }
+    </script>
 </body>
 </html>

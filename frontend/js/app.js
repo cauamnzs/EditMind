@@ -1,7 +1,7 @@
 // ==========================================
 // CONFIGURAÇÃO DO SERVIDOR E ESTADOS GLOBAIS
 // ==========================================
-window.API_BASE_URL = 'http://localhost:8000';
+// window.API_BASE_URL é definido em config.js
 
 // Variáveis Globais de Estado
 window.ultimoResultadoIA = null;

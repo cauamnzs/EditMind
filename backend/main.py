@@ -31,13 +31,15 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS - Crucial para frontend
+# CORS - TOTALMENTE PERMISSIVO para apresentação
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=86400,
 )
 
 # ==========================================

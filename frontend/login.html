@@ -138,10 +138,13 @@
         </p>
     </footer>
 
+    <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script>
         document.getElementById('form-login').addEventListener('submit', async (e) => {
             e.preventDefault();
+            console.log('[Login] Form submitted');
+            
             const btn = document.getElementById('btn-login');
             const erroDiv = document.getElementById('mensagem-erro');
             
@@ -149,15 +152,32 @@
             btn.textContent = 'Entrando...';
             erroDiv.classList.add('hidden');
 
-            const resultado = await Auth.login(
-                document.getElementById('email').value,
-                document.getElementById('senha').value
-            );
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            console.log('[Login] Email:', email);
 
-            if (resultado.sucesso) {
-                window.location.href = 'app.html';
-            } else {
-                erroDiv.querySelector('p').textContent = resultado.erro || 'Erro ao fazer login';
+            try {
+                console.log('[Login] Calling Auth.login...');
+                const resultado = await Auth.login(email, senha);
+                console.log('[Login] Result:', resultado);
+
+                if (resultado.sucesso) {
+                    console.log('[Login] Success, waiting for token save...');
+                    // Pequeno delay para garantir que localStorage foi atualizado
+                    setTimeout(() => {
+                        console.log('[Login] Redirecting to app...');
+                        window.location.href = 'app.html';
+                    }, 100);
+                } else {
+                    console.log('[Login] Failed:', resultado.erro);
+                    erroDiv.querySelector('p').textContent = resultado.erro || 'Erro ao fazer login';
+                    erroDiv.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.textContent = 'Entrar';
+                }
+            } catch (err) {
+                console.error('[Login] Exception:', err);
+                erroDiv.querySelector('p').textContent = 'Erro: ' + err.message;
                 erroDiv.classList.remove('hidden');
                 btn.disabled = false;
                 btn.textContent = 'Entrar';
