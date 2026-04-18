@@ -13,7 +13,7 @@
  */
 
 // ▼▼▼ COLE A URL DO NGROK AQUI ▼▼▼
-const NGROK_URL = 'https://shelley-filar-alona.ngrok-free.dev';
+const NGROK_URL = 'https://current-nut-vampire-lots.trycloudflare.com';
 // ▲▲▲ COLE A URL DO NGROK AQUI ▲▲▲
 
 // Detecta ambiente

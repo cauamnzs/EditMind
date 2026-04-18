@@ -11,7 +11,7 @@
 
 const CONFIG = {
     // 👇👇👇 COLE A URL DO NGROK AQUI 👇👇👇
-    NGROK_URL: 'https://SEU_NGROK_AQUI.ngrok-free.app',
+    NGROK_URL: 'https://current-nut-vampire-lots.trycloudflare.com',
     
     // Não alterar abaixo
     LOCAL_URL: 'http://localhost:8000',
