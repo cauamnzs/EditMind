@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "name": "editmind-frontend",
+  "routes": [
+    {
+      "src": "/(css|js|images|uploads|assets|dist)/(.+)",
+      "dest": "/$1/$2"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1",
+      "status": 200
+    }
+  ],
+  "buildCommand": "echo 'Static site - no build needed'",
+  "outputDirectory": ".",
+  "rewrites": [
+    {
+      "source": "/app",
+      "destination": "/app.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/login.html"
+    },
+    {
+      "source": "/cadastro",
+      "destination": "/cadastro.html"
+    },
+    {
+      "source": "/index",
+      "destination": "/index.html"
+    }
+  ]
+}

@@ -1,20 +1,43 @@
 // ==========================================
-// CONFIGURAÇÃO GLOBAL DA API
+// CONFIGURAÇÃO GLOBAL DA API - EditMind
 // ==========================================
-// IMPORTANTE: Antes de fazer git push para o Vercel,
-// atualize a URL do Ngrok abaixo!
 
-// ▼▼▼ ATUALIZE ESTA URL COM SUA URL DO NGROK ▼▼▼
+/**
+ * 🎓 PARA APRESENTAÇÃO NA FACULDADE:
+ * 1. Inicie backend: uvicorn main:app --reload
+ * 2. Inicie ngrok: ngrok http 8000
+ * 3. Copie a URL do ngrok
+ * 4. Cole abaixo em NGROK_URL
+ * 5. Faça git push
+ * 6. Deploy no Vercel
+ */
+
+// ▼▼▼ COLE A URL DO NGROK AQUI ▼▼▼
 const NGROK_URL = 'https://shelley-filar-alona.ngrok-free.dev';
-// ▲▲▲ ATUALIZE ESTA URL COM SUA URL DO NGROK ▲▲▲
+// ▲▲▲ COLE A URL DO NGROK AQUI ▲▲▲
 
-// Detecta se está rodando localmente ou no Vercel
+// Detecta ambiente
 const isLocal = window.location.hostname === 'localhost' || 
-                window.location.hostname === '127.0.0.1' ||
-                window.location.protocol === 'file:';
+                window.location.hostname === '127.0.0.1';
+const isVercel = window.location.hostname.includes('vercel.app') ||
+                 window.location.hostname.includes('editmind');
 
-// Define a URL da API
-window.API_BASE_URL = isLocal ? 'http://localhost:8000' : NGROK_URL;
+// Define URL da API
+if (isLocal) {
+    window.API_BASE_URL = 'http://localhost:8000';
+    console.log('[config] 🖥️  Modo: Desenvolvimento Local');
+} else if (isVercel) {
+    window.API_BASE_URL = NGROK_URL;
+    console.log('[config] 🚀 Modo: Vercel (Produção)');
+    console.log('[config] 🔗 Ngrok:', NGROK_URL);
+} else {
+    window.API_BASE_URL = NGROK_URL;
+    console.log('[config] 🌐 Modo: Outro (usando ngrok)');
+}
 
-console.log(`[Config] Ambiente: ${isLocal ? 'Local' : 'Produção (Vercel)'}`);
-console.log(`[Config] API_URL: ${window.API_BASE_URL}`);
+console.log('[config] 📡 API_BASE_URL:', window.API_BASE_URL);
+
+// Verificação de saúde
+fetch(`${window.API_BASE_URL}/`)
+    .then(r => console.log('[config] ✅ Backend online'))
+    .catch(e => console.log('[config] ❌ Backend offline:', e.message));
