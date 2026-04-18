@@ -46,7 +46,7 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "https://edit-mind.vercel.app",
         "https://editmind.vercel.app",
-        # "https://seu-app.onrender.com",  # Descomentar após deploy no Render
+       "https://editmind.onrender.com",  
     ],
     allow_credentials=True,
     allow_methods=["*"],

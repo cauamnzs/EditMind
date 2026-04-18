@@ -11,7 +11,7 @@
 
 const CONFIG = {
     // 👇👇👇 COLE A URL DO NGROK AQUI 👇👇👇
-    NGROK_URL: '',
+    NGROK_URL: 'https://editmind.onrender.com',
     
     // Não alterar abaixo
     LOCAL_URL: 'http://localhost:8000',

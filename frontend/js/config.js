@@ -13,7 +13,7 @@
  */
 
 // ▼▼▼ COLE A URL DO RENDER AQUI ▼▼▼
-const NGROK_URL = 'https://editmind-api.onrender.com';
+const NGROK_URL = 'https://editmind.onrender.com';
 // ▲▲▲ COLE A URL DO RENDER AQUI ▲▲▲
 
 // Detecta ambiente
