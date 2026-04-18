@@ -31,7 +31,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS - Configurado para Vercel + Ngrok
+# CORS - Lista explícita (Starlette NÃO suporta wildcards em allow_origins)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -43,15 +43,13 @@ app.add_middleware(
         "http://127.0.0.1:8000",
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "https://mind.vercel.app",
         "https://edit-mind.vercel.app",
-        "https://*.vercel.app",
+        "https://editmind.vercel.app",
         "https://shelley-filar-alona.ngrok-free.dev",
-        "https://*.ngrok-free.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*", "ngrok-skip-browser-warning"],
+    allow_headers=["*", "ngrok-skip-browser-warning", "Authorization", "Content-Type"],
     expose_headers=["*"],
     max_age=86400,
 )
