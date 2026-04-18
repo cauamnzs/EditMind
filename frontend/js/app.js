@@ -129,7 +129,7 @@ async function processarArquivos(arquivos) {
     // 4. Abre SSE — backend aguarda até 15s pela fila ser criada
     let sseAtivo = false;
     let sseReceivedFinal = false;
-    const sseUrl = `${window.API_BASE_URL}/api/upload/stream/${idVideo}`;
+    const sseUrl = `${window.API_BASE_URL}/api/upload/stream/${idVideo}?ngrok-skip-browser-warning=true`;
     const es = new EventSource(sseUrl);
     window._sseConexao = es;
 

@@ -197,6 +197,27 @@ if (!temToken && !isPaginaPublica) {
     window.location.replace('app.html');
 }
 
+// ==========================================
+// MODO DEMO - Para apresentação rápida
+// ==========================================
+Auth.modoDemo = function() {
+    console.log('[Auth] Ativando MODO DEMO...');
+    // Cria um token fake para a apresentação
+    localStorage.setItem('access_token', 'demo_token_123');
+    localStorage.setItem('usuario_demo', JSON.stringify({
+        nome: 'Dev',
+        email: 'dev@gmail.com',
+        modo: 'demo'
+    }));
+    window.location.href = 'app.html';
+};
+
+// Verifica se está em modo demo
+Auth.isDemo = function() {
+    const token = localStorage.getItem('access_token');
+    return token === 'demo_token_123';
+};
+
 // Expõe globalmente
 window.Auth = Auth;
 window.AuthGuard = AuthGuard;

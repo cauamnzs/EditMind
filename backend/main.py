@@ -31,13 +31,27 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS - TOTALMENTE PERMISSIVO para apresentação
+# CORS - Configurado para Vercel + Ngrok
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=[
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "http://localhost:5501",
+        "http://127.0.0.1:5501",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "https://mind.vercel.app",
+        "https://edit-mind.vercel.app",
+        "https://*.vercel.app",
+        "https://shelley-filar-alona.ngrok-free.dev",
+        "https://*.ngrok-free.app",
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*", "ngrok-skip-browser-warning"],
     expose_headers=["*"],
     max_age=86400,
 )

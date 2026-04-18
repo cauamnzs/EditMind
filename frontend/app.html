@@ -452,11 +452,21 @@
     <script src="js/editor.js"></script>
     <script>
         // Proteção de rota: verifica se tem token (auth.js já redirecionou se não tivesse)
-        // Mas garantimos aqui também para segurança extra
         const token = localStorage.getItem('access_token');
+        const isDemo = token === 'demo_token_123';
+        
         if (!token || token === 'null' || token === 'undefined') {
             console.log('[App] Sem token, redirecionando...');
             window.location.replace('login.html');
+        } else if (isDemo) {
+            console.log('[App] Modo DEMO ativo 🎓');
+            // Mostra banner de modo demo
+            const demoBanner = document.createElement('div');
+            demoBanner.id = 'demo-banner';
+            demoBanner.className = 'fixed top-0 left-0 right-0 z-[100] bg-gradient-to-r from-orange-600 to-red-600 text-white text-center py-2 text-sm font-bold';
+            demoBanner.innerHTML = '🎓 MODO APRESENTAÇÃO - Funcionalidades limitadas | <button onclick="Auth.logout()" class="underline hover:text-yellow-200">Sair do Demo</button>';
+            document.body.insertBefore(demoBanner, document.body.firstChild);
+            document.body.style.paddingTop = '40px';
         } else {
             console.log('[App] Token válido ✅');
         }
