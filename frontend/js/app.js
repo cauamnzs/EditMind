@@ -129,29 +129,27 @@ async function processarArquivos(arquivos) {
     // 4. Abre SSE — backend aguarda até 15s pela fila ser criada
     let sseAtivo = false;
     let sseReceivedFinal = false;
-    const sseUrl = `${window.API_BASE_URL}/api/upload/stream/${idVideo}?ngrok-skip-browser-warning=true`;
+    const sseUrl = `${window.API_BASE_URL}/api/upload/stream/${idVideo}`;
     const es = new EventSource(sseUrl);
     window._sseConexao = es;
 
     es.onopen = () => {
         sseAtivo = true;
-        console.log('[SSE] Conexão aberta para', idVideo);
+        console.log('[System] Stream de progresso conectado');
     };
     es.onmessage = (ev) => {
-        if (!ev.data || ev.data.trim().startsWith(':')) return; // heartbeat
+        if (!ev.data || ev.data.trim().startsWith(':')) return;
         try {
             const d = JSON.parse(ev.data);
-            console.log('[SSE] Evento:', d.etapa, d.progresso);
             _aplicarEventoSSE(d);
             if (d.etapa === 'concluido' || d.etapa === 'erro') {
                 sseReceivedFinal = true;
                 es.close();
                 window._sseConexao = null;
             }
-        } catch(e) { console.warn('[SSE] Parse error:', e, ev.data); }
+        } catch(e) {}
     };
-    es.onerror = (e) => {
-        console.warn('[SSE] Erro de conexão — usando fake-progress como fallback', e);
+    es.onerror = () => {
         sseAtivo = false;
     };
 
@@ -178,7 +176,6 @@ async function processarArquivos(arquivos) {
     try {
         const resposta = await fetch(`${window.API_BASE_URL}/api/upload`, {
             method: 'POST',
-            headers: { 'ngrok-skip-browser-warning': 'true' },
             body: dados
         });
 
@@ -231,10 +228,7 @@ window.processarLinkYoutubePrincipal = async function() {
     try {
         const resposta = await fetch(`${window.API_BASE_URL}/api/processar-youtube`, {
             method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': 'true'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ url: link, tempo_corte: window.tempoCorteAlvo }) 
         });
 
@@ -329,10 +323,7 @@ async function baixarYouTube() {
     try {
         const resposta = await fetch(`${window.API_BASE_URL}/api/download-youtube`, {
             method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': 'true'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ url: link })
         });
 
@@ -385,9 +376,7 @@ window.carregarHistorico = async function() {
     vazio.classList.add('hidden');
 
     try {
-        const resp = await fetch(`${window.API_BASE_URL}/api/projetos`, {
-            headers: { 'ngrok-skip-browser-warning': 'true' }
-        });
+        const resp = await fetch(`${window.API_BASE_URL}/api/projetos`);
         const dados = await resp.json();
 
         loading.classList.add('hidden');
@@ -434,9 +423,7 @@ window.carregarHistorico = async function() {
 
 window.reabrirProjeto = async function(idVideo) {
     try {
-        const resp = await fetch(`${window.API_BASE_URL}/api/video/${idVideo}/clips`, {
-            headers: { 'ngrok-skip-browser-warning': 'true' }
-        });
+        const resp = await fetch(`${window.API_BASE_URL}/api/video/${idVideo}/clips`);
         if (!resp.ok) throw new Error('Projeto não encontrado');
         const dados = await resp.json();
 

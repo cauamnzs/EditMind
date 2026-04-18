@@ -3,7 +3,7 @@
 // ==========================================
 
 const Auth = {
-    API_URL: window.API_BASE_URL || 'http://localhost:8000',
+    get API_URL() { return window.API_BASE_URL; },
     
     /**
      * Registra novo usuário
@@ -12,10 +12,7 @@ const Auth = {
         try {
             const response = await fetch(`${this.API_URL}/api/auth/cadastrar`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nome, email, senha })
             });
             
@@ -39,10 +36,7 @@ const Auth = {
         try {
             const response = await fetch(`${this.API_URL}/api/auth/login`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, senha })
             });
             
@@ -65,10 +59,7 @@ const Auth = {
     async loginDev() {
         try {
             const response = await fetch(`${this.API_URL}/api/auth/setup-dev`, {
-                method: 'GET',
-                headers: {
-                    'ngrok-skip-browser-warning': 'true'
-                }
+                method: 'GET'
             });
             
             const data = await response.json();
@@ -115,8 +106,7 @@ const Auth = {
     getAuthHeaders() {
         const token = this._getToken();
         return {
-            'Authorization': token ? `Bearer ${token}` : '',
-            'ngrok-skip-browser-warning': 'true'
+            'Authorization': token ? `Bearer ${token}` : ''
         };
     },
 

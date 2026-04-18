@@ -316,7 +316,7 @@ window.abrirEditorCorte = function(index) {
 
         fetch(`${window.API_BASE_URL}/api/ai/preview-corte`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 id_video: window.idVideoAtual,
                 segments_to_keep: corte.segments_to_keep,
@@ -336,9 +336,7 @@ window.abrirEditorCorte = function(index) {
             }
 
             // Carrega clipe recortado via blob
-            fetch(`${window.API_BASE_URL}${data.video_url}`, {
-                headers: { 'ngrok-skip-browser-warning': 'true' }
-            })
+            fetch(`${window.API_BASE_URL}${data.video_url}`)
             .then(r => r.blob())
             .then(blob => {
                 videoPlayer.src = URL.createObjectURL(blob);
@@ -364,9 +362,7 @@ window.abrirEditorCorte = function(index) {
 
                 // VTT sincronizado
                 if (data.vtt_url) {
-                    fetch(`${window.API_BASE_URL}${data.vtt_url}`, {
-                        headers: { 'ngrok-skip-browser-warning': 'true' }
-                    })
+                    fetch(`${window.API_BASE_URL}${data.vtt_url}`)
                     .then(r => r.text())
                     .then(vttText => {
                         const track = document.createElement('track');
@@ -414,7 +410,7 @@ function _carregarVideoLegado(videoPlayer, corte, segInicio, segFim, texto) {
         videoPlayer.appendChild(track);
     }
     videoPlayer.muted = true;
-    fetch(window.caminhoVideoGlobal, { headers: { 'ngrok-skip-browser-warning': 'true' } })
+    fetch(window.caminhoVideoGlobal)
     .then(r => r.blob())
     .then(blob => {
         videoPlayer.src = URL.createObjectURL(blob);
@@ -661,8 +657,7 @@ const Editor = {
             const response = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(bodyPayload)
             });
@@ -698,9 +693,7 @@ const Editor = {
                 const videoPlayer = document.getElementById('player-vertical');
                 videoPlayer.ontimeupdate = null;
 
-                fetch(`${window.API_BASE_URL}${data.video_url}`, {
-                    headers: { 'ngrok-skip-browser-warning': 'true' }
-                })
+                fetch(`${window.API_BASE_URL}${data.video_url}`)
                 .then(r => r.blob())
                 .then(blob => {
                     const blobUrl = URL.createObjectURL(blob);
@@ -710,9 +703,7 @@ const Editor = {
 
                     // Carrega VTT sincronizado do backend se disponível
                     if (data.vtt_url) {
-                        fetch(`${window.API_BASE_URL}${data.vtt_url}`, {
-                            headers: { 'ngrok-skip-browser-warning': 'true' }
-                        })
+                        fetch(`${window.API_BASE_URL}${data.vtt_url}`)
                         .then(r => r.text())
                         .then(vttText => {
                             const vttBlob = new Blob([vttText], { type: 'text/vtt' });

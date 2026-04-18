@@ -38,8 +38,6 @@ if (isLocal) {
 console.log('[config] 📡 API_BASE_URL:', window.API_BASE_URL);
 
 // Verificação de saúde
-fetch(`${window.API_BASE_URL}/`, {
-    headers: { 'ngrok-skip-browser-warning': 'true' }
-})
-    .then(r => console.log('[config] ✅ Backend online'))
-    .catch(e => console.log('[config] ❌ Backend offline:', e.message));
+fetch(`${window.API_BASE_URL}/`)
+    .then(r => r.ok ? console.log('[System] Backend online ✅') : console.warn('[System] Backend retornou', r.status))
+    .catch(() => console.warn('[System] Backend offline — verifique o tunnel'));

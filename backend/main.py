@@ -45,11 +45,11 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "https://edit-mind.vercel.app",
         "https://editmind.vercel.app",
-        "https://current-nut-vampire-lots.trycloudflare.com",
+        "https://months-intersection-herb-cool.trycloudflare.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*", "ngrok-skip-browser-warning", "Authorization", "Content-Type"],
+    allow_headers=["*", "Authorization", "Content-Type"],
     expose_headers=["*"],
     max_age=86400,
 )
