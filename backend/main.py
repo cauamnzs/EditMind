@@ -31,7 +31,8 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS - Lista explícita (Starlette NÃO suporta wildcards em allow_origins)
+# CORS - Lista explícita (Starlette NÃO suporta wildcards com allow_credentials=True)
+#  Após deploy no Render, adicione a URL aqui: "https://seu-app.onrender.com"
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -45,7 +46,7 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "https://edit-mind.vercel.app",
         "https://editmind.vercel.app",
-        "https://months-intersection-herb-cool.trycloudflare.com",
+        # "https://seu-app.onrender.com",  # Descomentar após deploy no Render
     ],
     allow_credentials=True,
     allow_methods=["*"],
