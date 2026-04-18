@@ -45,7 +45,7 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "https://edit-mind.vercel.app",
         "https://editmind.vercel.app",
-        "https://shelley-filar-alona.ngrok-free.dev",
+        "https://current-nut-vampire-lots.trycloudflare.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],

@@ -5,16 +5,16 @@
 /**
  * 🎓 PARA APRESENTAÇÃO NA FACULDADE:
  * 1. Inicie backend: uvicorn main:app --reload
- * 2. Inicie ngrok: ngrok http 8000
- * 3. Copie a URL do ngrok
- * 4. Cole abaixo em NGROK_URL
+ * 2. Inicie tunnel: cloudflared tunnel --url http://localhost:8000
+ * 3. Copie a URL gerada (ex: https://xxx.trycloudflare.com)
+ * 4. Cole abaixo em TUNNEL_URL
  * 5. Faça git push
  * 6. Deploy no Vercel
  */
 
-// ▼▼▼ COLE A URL DO NGROK AQUI ▼▼▼
+// ▼▼▼ COLE A URL DO TUNNEL AQUI ▼▼▼
 const NGROK_URL = 'https://current-nut-vampire-lots.trycloudflare.com';
-// ▲▲▲ COLE A URL DO NGROK AQUI ▲▲▲
+// ▲▲▲ COLE A URL DO TUNNEL AQUI ▲▲▲
 
 // Detecta ambiente
 const isLocal = window.location.hostname === 'localhost' || 
@@ -29,10 +29,10 @@ if (isLocal) {
 } else if (isVercel) {
     window.API_BASE_URL = NGROK_URL;
     console.log('[config] 🚀 Modo: Vercel (Produção)');
-    console.log('[config] 🔗 Ngrok:', NGROK_URL);
+    console.log('[config] 🔗 Tunnel:', NGROK_URL);
 } else {
     window.API_BASE_URL = NGROK_URL;
-    console.log('[config] 🌐 Modo: Outro (usando ngrok)');
+    console.log('[config] 🌐 Modo: Outro (usando tunnel)');
 }
 
 console.log('[config] 📡 API_BASE_URL:', window.API_BASE_URL);
