@@ -13,7 +13,7 @@
  */
 
 // ▼▼▼ COLE A URL DO TUNNEL AQUI ▼▼▼
-const NGROK_URL = 'https://current-nut-vampire-lots.trycloudflare.com';
+const NGROK_URL = 'https://months-intersection-herb-cool.trycloudflare.com';
 // ▲▲▲ COLE A URL DO TUNNEL AQUI ▲▲▲
 
 // Detecta ambiente

@@ -11,7 +11,7 @@
 
 const CONFIG = {
     // 👇👇👇 COLE A URL DO NGROK AQUI 👇👇👇
-    NGROK_URL: 'https://current-nut-vampire-lots.trycloudflare.com',
+    NGROK_URL: 'https://months-intersection-herb-cool.trycloudflare.com',
     
     // Não alterar abaixo
     LOCAL_URL: 'http://localhost:8000',
