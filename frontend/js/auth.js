@@ -172,12 +172,10 @@ const AuthGuard = {
 // INICIALIZAÇÃO COM REDIRECIONAMENTO INTELIGENTE
 // ==========================================
 
-// Whitelist de páginas públicas (não precisam de token)
-const PAGINAS_PUBLICAS = ['/login.html', '/cadastro.html', '/index.html', '/'];
+// Whitelist ESTRITA de páginas públicas (usa endsWith para evitar falsos positivos)
 const paginaAtual = window.location.pathname;
-const isPaginaPublica = PAGINAS_PUBLICAS.some(page => paginaAtual.includes(page)) || 
-                        paginaAtual === '/' || 
-                        paginaAtual.endsWith('index.html');
+const isPaginaPublica = ['/login.html', '/cadastro.html', '/index.html'].some(p => paginaAtual.endsWith(p)) || 
+                        paginaAtual === '/';
 
 const token = localStorage.getItem('access_token');
 const temToken = token && token !== 'null' && token !== 'undefined';
@@ -186,14 +184,14 @@ console.log('[Auth Init] Página:', paginaAtual);
 console.log('[Auth Init] Pública?', isPaginaPublica);
 console.log('[Auth Init] Token?', temToken ? 'SIM' : 'NÃO');
 
-// Lógica de redirecionamento
-if (!temToken && !isPaginaPublica) {
-    // Sem token em página protegida → manda pro login
-    console.log('[Auth] Sem token em rota protegida, redirecionando...');
+// Lógica de redirecionamento com trava anti-loop
+if (!temToken && !isPaginaPublica && !paginaAtual.endsWith('app.html')) {
+    // Sem token em página protegida → login
+    console.log('[Auth] Sem token, indo pro login...');
     window.location.replace('login.html');
-} else if (temToken && isPaginaPublica) {
-    // Tem token mas está em página pública → manda pro app
-    console.log('[Auth] Usuário logado, redirecionando para app...');
+} else if (temToken && isPaginaPublica && !paginaAtual.endsWith('app.html')) {
+    // 🚨 TRAVA: só vai pro app se JÁ não estiver nele
+    console.log('[Auth] Logado em página pública, indo pro app...');
     window.location.replace('app.html');
 }
 
