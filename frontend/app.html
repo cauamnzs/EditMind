@@ -452,13 +452,14 @@
     <script src="js/editor.js"></script>
     <script>
         // Proteção de rota: verifica se tem token (auth.js já redirecionou se não tivesse)
-        const token = localStorage.getItem('access_token');
-        const isDemo = token === 'demo_token_123';
+        // Usando let para evitar redeclaração (auth.js já declara const token)
+        let appToken = localStorage.getItem('access_token');
+        const isDemoMode = appToken === 'demo_token_123';
         
-        if (!token || token === 'null' || token === 'undefined') {
+        if (!appToken || appToken === 'null' || appToken === 'undefined') {
             console.log('[App] Sem token, redirecionando...');
             window.location.replace('login.html');
-        } else if (isDemo) {
+        } else if (isDemoMode) {
             console.log('[App] Modo DEMO ativo 🎓');
             // Mostra banner de modo demo
             const demoBanner = document.createElement('div');
